@@ -1,6 +1,6 @@
 # Trabalho Final — Engenharia de Software
 
-Repositório destinado ao trabalho final da disciplina de **Engenharia de Software**, desenvolvido de forma incremental em cinco releases. O projeto contempla análise de requisitos, planejamento, implementação, testes automatizados e gerência de configuração.
+Repositório destinado ao trabalho final da disciplina de **Gerência de Projetos de Software**, desenvolvido de forma incremental em cinco releases. O projeto contempla análise de requisitos, planejamento, implementação, testes automatizados e gerência de configuração.
 
 ## Objetivos
 
@@ -94,8 +94,6 @@ A estrutura poderá ser adaptada conforme as tecnologias utilizadas no projeto.
 
 Cada release deve ter seu desenvolvimento acompanhado em branch apropriada, com commits que registrem as mudanças no código e nos documentos. Ao concluir uma release, deve ser criada uma **tag** que identifique sua baseline.
 
-Sugestão de nomenclatura (ajustável às orientações da disciplina):
-
 | Release | Branch | Tag |
 | --- | --- | --- |
 | 00 | `release-00` | `v0.0-release-00` |
@@ -122,21 +120,18 @@ Os CRUDs implementados devem ser validados com **Selenium**, cobrindo, conforme 
 
 ## Equipe
 
-- Integrante 1
-- Integrante 2
-- Integrante 3
-- Integrante 4
-
-**Professor(a):** a preencher.
+- Camily Victal
+- Luis Gustavo Riso
+- Rodolfo Alberti
+- João Jacometti
 
 ## Acompanhamento
 
 | Release | Status |
 | --- | --- |
-| 00 | A iniciar |
+| 00 | Concluída |
 | 01 | Pendente |
 | 02 | Pendente |
 | 03 | Pendente |
 | 04 | Pendente |
 
-> Trabalho acadêmico desenvolvido para aplicar práticas de Engenharia de Software, planejamento, testes e gerência de configuração.
