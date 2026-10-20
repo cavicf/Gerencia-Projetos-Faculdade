@@ -1,4 +1,4 @@
-# Trabalho Final — Engenharia de Software
+# Trabalho Final — Gerência de Projetos de Software
 
 Repositório destinado ao trabalho final da disciplina de **Gerência de Projetos de Software**, desenvolvido de forma incremental em cinco releases. O projeto contempla análise de requisitos, planejamento, implementação, testes automatizados e gerência de configuração.
 
