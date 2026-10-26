@@ -2,7 +2,7 @@
 // Pré-requisito: `npm run seed` e `npm run dev` rodando na raiz do repositório.
 import assert from "node:assert/strict";
 import { after, before, describe, it } from "node:test";
-import { abrir, criarDriver, porTestId } from "../support/driver.mjs";
+import { abrir, aguardarUrl, clicar, criarDriver, porTestId } from "../support/driver.mjs";
 
 describe("Smoke – aplicação no ar", () => {
   let driver;
@@ -25,8 +25,8 @@ describe("Smoke – aplicação no ar", () => {
 
   it("navega até o módulo de Disciplinas pelo menu", async () => {
     await abrir(driver, "/");
-    await (await porTestId(driver, "nav-disciplinas")).click();
-    await porTestId(driver, "em-construcao");
-    assert.match(await driver.getCurrentUrl(), /\/disciplinas$/);
+    await clicar(driver, "nav-disciplinas");
+    await aguardarUrl(driver, /\/disciplinas$/);
+    await porTestId(driver, "nova-disciplina");
   });
 });

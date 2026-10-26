@@ -58,6 +58,19 @@ export interface Atividade extends RegistroDoUsuario {
   dataConclusao: DataHoraISO | null;
 }
 
+/** RF07 – atividade com o nome da disciplina, para listagens. */
+export interface AtividadeDetalhada extends Atividade {
+  disciplinaCodigo: string;
+  disciplinaNome: string;
+}
+
+/** Corpo de POST/PUT `/disciplinas`. */
+export type DisciplinaEntrada = Pick<Disciplina, "codigo" | "nome" | "professor" | "semestre">;
+
+/** Corpo de POST/PUT `/atividades`. `tipo`, `descricao` e `prioridade` são opcionais (RF04/RF06). */
+export type AtividadeEntrada = Pick<Atividade, "titulo" | "dataEntrega" | "disciplinaId"> &
+  Partial<Pick<Atividade, "descricao" | "tipo" | "prioridade">>;
+
 /** RF08 – nota e peso de uma atividade concluída (CRUD "Manter Avaliações", Release 02). */
 export interface Avaliacao extends RegistroDoUsuario {
   atividadeId: string;

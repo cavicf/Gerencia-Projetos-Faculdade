@@ -122,17 +122,17 @@ Base: `http://localhost:3333/api`. Todas as rotas (exceto `health` e `auth`) fil
 | Método | Rota | Requisito | Release |
 | --- | --- | --- | --- |
 | GET | `/health` | — | pronto |
-| GET | `/disciplinas` | RF02 (com contagens) | 01 |
-| POST | `/disciplinas` | RF01 | 01 |
-| GET | `/disciplinas/:id` | RF02 | 01 |
-| PUT | `/disciplinas/:id` | RF03 | 01 |
-| DELETE | `/disciplinas/:id` | RF03 (cascata) | 01 |
-| GET | `/atividades?disciplinaId=` | RF04/RF05 | 01 |
-| POST | `/atividades` | RF04/RF06 | 01 |
-| GET | `/atividades/:id` | RF05 | 01 |
-| PUT | `/atividades/:id` | RF07 | 01 |
-| PATCH | `/atividades/:id/status` | RF05 | 01 |
-| DELETE | `/atividades/:id` | RF07 | 01 |
+| GET | `/disciplinas` | RF02 (com contagens) | pronto (R01) |
+| POST | `/disciplinas` | RF01 | pronto (R01) |
+| GET | `/disciplinas/:id` | RF02 | pronto (R01) |
+| PUT | `/disciplinas/:id` | RF03 | pronto (R01) |
+| DELETE | `/disciplinas/:id` | RF03 (cascata) | pronto (R01) |
+| GET | `/atividades?disciplinaId=` | RF04/RF05 | pronto (R01) |
+| POST | `/atividades` | RF04/RF06 | pronto (R01) |
+| GET | `/atividades/:id` | RF05 | pronto (R01) |
+| PUT | `/atividades/:id` | RF07 | pronto (R01) |
+| PATCH | `/atividades/:id/status` | RF05 | pronto (R01) |
+| DELETE | `/atividades/:id` | RF07 | pronto (R01) |
 | GET/POST | `/avaliacoes` | RF08 | 02 |
 | GET/PUT/DELETE | `/avaliacoes/:id` | RF08 | 02 |
 | GET | `/avaliacoes/desempenho` | RF08 (média por disciplina) | 02 |
@@ -148,28 +148,30 @@ Sessão (Release 02): cookie `httpOnly` assinado (JWT ou id de sessão em `sesso
 
 | Rota | Conteúdo | Release |
 | --- | --- | --- |
-| `/` | Início com atalhos e status da API (vira "Próximos prazos" — RF09 — na Release 04) | pronto |
-| `/disciplinas` | Tabela + botão "Nova disciplina" + editar/excluir com diálogo de confirmação | 01 |
-| `/disciplinas/nova`, `/disciplinas/[id]/editar` | Formulário | 01 |
-| `/atividades` | Lista com troca rápida de status + "Nova atividade" | 01 |
-| `/atividades/nova`, `/atividades/[id]/editar` | Formulário (prioridade pré-selecionada "Média") | 01 |
+| `/` | Início com atalho "Nova atividade" (RNF02) e status da API (vira "Próximos prazos" — RF09 — na Release 04) | pronto |
+| `/disciplinas` | Tabela + botão "Nova disciplina" + editar/excluir com diálogo de confirmação | pronto (R01) |
+| `/disciplinas/nova`, `/disciplinas/[id]/editar` | Formulário | pronto (R01) |
+| `/atividades` | Lista com troca rápida de status + "Nova atividade" | pronto (R01) |
+| `/atividades/nova`, `/atividades/[id]/editar` | Formulário (prioridade pré-selecionada "Média") | pronto (R01) |
 | `/avaliacoes` | Avaliações por disciplina com média ponderada | 02 |
 | `/login`, `/cadastro`, `/perfil` | Autenticação e perfil | 02 |
 
-Convenção sugerida: cada módulo em `apps/web/src/features/<modulo>/` (componentes, chamadas à API e ações), com as páginas em `src/app/` apenas compondo esses componentes. Elementos usados nos testes recebem `data-testid`.
+Convenção adotada: cada módulo em `apps/web/src/features/<modulo>/` (tabelas, formulários e ações), com as páginas em `src/app/` apenas compondo esses componentes. Elementos usados nos testes recebem `data-testid`.
+
+O navegador não acessa a API diretamente: o Next.js repassa `/api/*` para `API_URL` (rewrite em `next.config.ts`). Assim não há CORS e o cookie de sessão da Release 02 ficará no mesmo domínio do front.
 
 ## 9. Testes Selenium previstos
 
 | Caso | Cenários | Release |
 | --- | --- | --- |
 | Smoke | Tela inicial carrega e API está online; navegação pelo menu | pronto |
-| CT-01 | Cadastrar disciplina; impedir código repetido no mesmo semestre; permitir em outro semestre | 01 |
-| CT-02 | Listagem mostra contagem de pendentes/concluídas correta | 01 |
-| CT-03 | Editar disciplina; excluir com confirmação e verificar remoção das atividades | 01 |
-| CT-04 | Cadastrar atividade; mensagens para título/data/disciplina vazios | 01 |
-| CT-05 | Mudar status para concluída e verificar data de conclusão | 01 |
-| CT-06 | Atividade sem prioridade informada fica "Média" | 01 |
-| CT-07 | Trocar disciplina de atividade; excluir com confirmação | 01 |
+| CT-01 | Cadastrar disciplina; impedir código repetido no mesmo semestre; permitir em outro semestre | pronto (R01) |
+| CT-02 | Listagem mostra contagem de pendentes/concluídas correta | pronto (R01) |
+| CT-03 | Editar disciplina; excluir com confirmação e verificar remoção das atividades | pronto (R01) |
+| CT-04 | Cadastrar atividade; mensagens para título/data/disciplina vazios | pronto (R01) |
+| CT-05 | Mudar status para concluída e verificar data de conclusão | pronto (R01) |
+| CT-06 | Atividade sem prioridade informada fica "Média" | pronto (R01) |
+| CT-07 | Trocar disciplina de atividade; excluir com confirmação | pronto (R01) |
 | CT-08 | Registrar nota/peso apenas em atividade concluída; média ponderada | 02 |
 | CT-14 | Cadastro com e-mail duplicado e senha curta rejeitados | 02 |
 | CT-15 | Login, logout e redirecionamento de rota protegida sem sessão | 02 |
@@ -188,3 +190,20 @@ Convenção sugerida: cada módulo em `apps/web/src/features/<modulo>/` (compone
 3. Testes Selenium CT-01..CT-07 → tag da Release 01.
 4. **Usuários/Autenticação** (substitui o middleware `usuario-atual`) e **Avaliações** em paralelo.
 5. Testes CT-08, CT-14, CT-15 e de isolamento → tag da Release 02.
+
+## 12. Situação da Release 01 (implementação)
+
+| Item | Situação |
+| --- | --- |
+| API `/disciplinas` (RF01–RF03) com unicidade por semestre e exclusão em cascata | ✅ |
+| API `/atividades` (RF04–RF07) com prioridade padrão, data de conclusão automática e troca de disciplina | ✅ |
+| Telas de listagem, cadastro, edição e exclusão com confirmação | ✅ |
+| Testes Selenium CT-01 a CT-07 (`tests/selenium/specs/disciplinas.test.mjs` e `atividades.test.mjs`) | ✅ 17/17 passando |
+| Atualizar o CRO com as datas reais e criar a tag `v0.1-release-01` | Pendente (equipe) |
+
+Decisões tomadas na implementação (registrar no DRE se a equipe concordar):
+- O código da disciplina é gravado em maiúsculas e comparado sem diferenciar maiúsculas (`sdes06` = `SDES06`).
+- Semestre no formato `AAAA.1` ou `AAAA.2`.
+- Na atividade, `tipo` assume `tarefa` quando não informado (só título, data e disciplina são obrigatórios — RF04/RNF02).
+- Status é alterado direto na lista (RF05); o formulário de edição não mexe no status.
+- Registros de outro estudante respondem 404, sem revelar que existem (RNF10).

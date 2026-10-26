@@ -9,7 +9,7 @@ export class AppError extends Error {
   }
 }
 
-export const naoEncontrado = (recurso: string) => new AppError(404, `${recurso} não encontrado(a).`);
+export const naoEncontrado = (mensagem: string) => new AppError(404, mensagem);
 
 export const dadosInvalidos = (campos: Record<string, string>) =>
   new AppError(400, "Verifique os campos informados.", campos);

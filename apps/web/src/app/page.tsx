@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Suspense } from "react";
 import { ApiStatus } from "@/components/api-status";
+import { botaoPrimario } from "@/components/ui/estilos";
 import { PageHeader } from "@/components/ui/page-header";
 import { NAVEGACAO } from "@/config/navegacao";
 
@@ -11,6 +12,12 @@ export default function InicioPage() {
       <PageHeader
         titulo="Bem-vindo ao AcadFlow"
         descricao="Organize provas, trabalhos e tarefas de todas as suas disciplinas em um só lugar."
+        acoes={
+          // RNF02: cadastro de atividade em até 3 interações a partir da tela inicial.
+          <Link href="/atividades/nova" data-testid="inicio-nova-atividade" className={botaoPrimario}>
+            Nova atividade
+          </Link>
+        }
       />
 
       <section className="mb-8 grid gap-4 sm:grid-cols-3">

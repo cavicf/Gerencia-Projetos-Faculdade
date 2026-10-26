@@ -1,6 +1,7 @@
 import type { ErroApi } from "@acadflow/shared";
 
-export const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3333";
+/** Endereço da API usado pelo servidor do Next.js (o navegador passa pelo rewrite de `/api`). */
+export const API_URL = process.env.API_URL ?? "http://localhost:3333";
 
 /** Erro retornado pela API, já com a mensagem pronta para exibir ao estudante (RNF05). */
 export class ApiError extends Error {
@@ -15,9 +16,10 @@ export class ApiError extends Error {
 
 /** Chamada à API REST do AcadFlow. Usada tanto em Server quanto em Client Components. */
 export async function api<T>(caminho: string, init?: RequestInit): Promise<T> {
+  const base = typeof window === "undefined" ? API_URL : "";
   let resposta: Response;
   try {
-    resposta = await fetch(`${API_URL}/api${caminho}`, {
+    resposta = await fetch(`${base}/api${caminho}`, {
       ...init,
       cache: "no-store",
       credentials: "include",
@@ -35,4 +37,14 @@ export async function api<T>(caminho: string, init?: RequestInit): Promise<T> {
     throw new ApiError(resposta.status, erro?.mensagem ?? "Ocorreu um erro inesperado.", erro?.campos);
   }
   return corpo as T;
+}
+
+/** Busca um recurso; retorna `null` quando a API responde 404 (inexistente ou de outro usuário). */
+export async function apiOuNulo<T>(caminho: string): Promise<T | null> {
+  try {
+    return await api<T>(caminho);
+  } catch (erro) {
+    if (erro instanceof ApiError && erro.status === 404) return null;
+    throw erro;
+  }
 }
