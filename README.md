@@ -107,7 +107,8 @@ Outros comandos:
 | `npm run typecheck` | Verifica os tipos de todos os pacotes |
 | `npm run lint` | ESLint do front-end |
 | `npm run build` | Build de produção do front-end |
-| `npm run test:e2e` | Testes Selenium (com a aplicação rodando; `WEB_URL` e `HEADLESS=false` são opcionais) |
+| `npm run test:e2e` | Testes Selenium em modo headless (com a aplicação rodando; use `WEB_URL` se o front não estiver na porta 3000) |
+| `npm run test:e2e:navegador` | Os mesmos testes com o Chrome visível e uma pausa entre as ações para acompanhar na tela (ajuste em `tests/selenium/navegador.env`) |
 
 As variáveis de ambiente opcionais estão em `apps/api/.env.example` e `apps/web/.env.example`.
 

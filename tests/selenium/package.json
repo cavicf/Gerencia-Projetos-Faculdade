@@ -5,7 +5,8 @@
   "description": "Testes funcionais automatizados (Selenium WebDriver) dos CRUDs do AcadFlow.",
   "type": "module",
   "scripts": {
-    "test": "node --test --test-concurrency=1 \"specs/**/*.test.mjs\""
+    "test": "node --test --test-concurrency=1 \"specs/**/*.test.mjs\"",
+    "test:navegador": "node --env-file=navegador.env --test --test-concurrency=1 \"specs/**/*.test.mjs\""
   },
   "devDependencies": {
     "selenium-webdriver": "^4.51.0"

@@ -8,8 +8,15 @@ export interface ErroApi {
   };
 }
 
+/** Rota pública: informa apenas se a API está no ar, sem expor dados de usuários (RNF10). */
 export interface SaudeApi {
   status: "ok";
   versao: string;
-  colecoes: Record<string, number>;
+}
+
+/** Totais do estudante autenticado exibidos na tela inicial. */
+export interface ResumoUsuario {
+  disciplinas: number;
+  atividades: number;
+  avaliacoes: number;
 }

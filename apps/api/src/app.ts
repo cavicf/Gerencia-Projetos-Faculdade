@@ -6,6 +6,7 @@ import { usuarioAtual } from "./middlewares/usuario-atual";
 import { atividadesRoutes } from "./modules/atividades/atividades.routes";
 import { disciplinasRoutes } from "./modules/disciplinas/disciplinas.routes";
 import { healthRoutes } from "./modules/health/health.routes";
+import { resumoRoutes } from "./modules/resumo/resumo.routes";
 
 export function criarApp() {
   const app = express();
@@ -17,6 +18,7 @@ export function criarApp() {
 
   // Rotas dos módulos (a partir daqui todas exigem um usuário — RNF10):
   app.use("/api", usuarioAtual);
+  app.use("/api/resumo", resumoRoutes);
   app.use("/api/disciplinas", disciplinasRoutes);
   app.use("/api/atividades", atividadesRoutes);
   // Release 02: app.use("/api/avaliacoes", avaliacoesRoutes);

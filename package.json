@@ -16,7 +16,8 @@
     "lint": "npm run lint -w @acadflow/web",
     "typecheck": "npm run typecheck --workspaces --if-present",
     "seed": "npm run seed -w @acadflow/api",
-    "test:e2e": "npm test -w @acadflow/selenium"
+    "test:e2e": "npm test -w @acadflow/selenium",
+    "test:e2e:navegador": "npm run test:navegador -w @acadflow/selenium"
   },
   "devDependencies": {
     "concurrently": "^9.2.1"

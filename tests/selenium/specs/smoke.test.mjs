@@ -2,7 +2,8 @@
 // Pré-requisito: `npm run seed` e `npm run dev` rodando na raiz do repositório.
 import assert from "node:assert/strict";
 import { after, before, describe, it } from "node:test";
-import { abrir, aguardarUrl, clicar, criarDriver, porTestId } from "../support/driver.mjs";
+import { By } from "selenium-webdriver";
+import { abrir, aguardarUrl, clicar, criarDriver, porTestId, seletorTestId, textoEm } from "../support/driver.mjs";
 
 describe("Smoke – aplicação no ar", () => {
   let driver;
@@ -21,6 +22,23 @@ describe("Smoke – aplicação no ar", () => {
 
     const status = await porTestId(driver, "api-status");
     assert.equal(await status.getAttribute("data-status"), "online");
+  });
+
+  it("mostra na tela inicial apenas os totais do estudante atual (RNF10)", async () => {
+    const contarLinhas = async (caminho, testId) => {
+      await abrir(driver, caminho);
+      await porTestId(driver, testId);
+      const linhas = await driver.findElements(By.css(seletorTestId(testId)));
+      const visiveis = await Promise.all(linhas.map((linha) => linha.isDisplayed()));
+      return visiveis.filter(Boolean).length;
+    };
+    const total = async (chave) => {
+      await abrir(driver, "/");
+      return textoEm(await porTestId(driver, `resumo-${chave}`), "resumo-total");
+    };
+
+    assert.equal(await total("disciplinas"), String(await contarLinhas("/disciplinas", "disciplina-linha")));
+    assert.equal(await total("atividades"), String(await contarLinhas("/atividades", "atividade-linha")));
   });
 
   it("navega até o módulo de Disciplinas pelo menu", async () => {
