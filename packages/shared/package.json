@@ -1,0 +1,18 @@
+{
+  "name": "@acadflow/shared",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Tipos de domínio e constantes compartilhados entre a API e o front-end do AcadFlow.",
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "typescript": "^5"
+  }
+}

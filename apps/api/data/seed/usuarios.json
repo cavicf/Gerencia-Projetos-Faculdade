@@ -1,0 +1,18 @@
+[
+  {
+    "id": "bc231e53-7352-4ca2-a676-852d4bd09f35",
+    "nome": "Estudante de Teste",
+    "email": "estudante@acadflow.dev",
+    "senhaHash": "$2b$10$.tgQHAc4uFbBl6dXDBElpe3H3uyuDn0yuP/lKAKfArP4lt4F0EnJK",
+    "criadoEm": "2026-10-01T12:00:00.000Z",
+    "atualizadoEm": "2026-10-01T12:00:00.000Z"
+  },
+  {
+    "id": "f699d4fd-d2d9-4cad-90b9-28b461117a80",
+    "nome": "Outro Estudante",
+    "email": "outro@acadflow.dev",
+    "senhaHash": "$2b$10$PimgCZLx/f20bcVkivBtNeJO.njHXHwTVZJXCepGQqGBTgTdWvAFm",
+    "criadoEm": "2026-10-01T12:00:00.000Z",
+    "atualizadoEm": "2026-10-01T12:00:00.000Z"
+  }
+]

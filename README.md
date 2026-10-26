@@ -72,23 +72,57 @@ O DRE e o Cronograma devem ser atualizados durante o projeto, sempre que necess�
 - Criar a tag de baseline da release.
 - Apresentar os resultados ao professor.
 
-## Organização sugerida do repositório
+## Organização do repositório
 
 ```text
 .
-├── docs/
-│   ├── requisitos/
-│   ├── estimativa/
-│   ├── cronograma/
-│   ├── rastreabilidade/
-│   └── revisao-cruzada/
-├── src/
+├── analysis/          # DRE, EST, CRO, MRB, Plano de Projeto e análises das releases
+├── apps/
+│   ├── api/           # Back-end Node.js + Express (dados em arquivos JSON)
+│   └── web/           # Front-end Next.js (App Router) + Tailwind CSS
+├── packages/
+│   └── shared/        # Tipos de domínio e constantes compartilhados
 ├── tests/
-│   └── selenium/
+│   └── selenium/      # Testes automatizados com Selenium WebDriver
 └── README.md
 ```
 
-A estrutura poderá ser adaptada conforme as tecnologias utilizadas no projeto.
+A análise das Releases 01 e 02 (escopo, regras de negócio, API, telas, testes e inconsistências encontradas) está em [`analysis/ANALISE_RELEASES_01_02.md`](analysis/ANALISE_RELEASES_01_02.md).
+
+## Como executar
+
+Pré-requisitos: **Node.js 20+** e **Google Chrome** (para os testes Selenium).
+
+```bash
+npm install          # instala as dependências de todos os pacotes
+npm run seed         # cria apps/api/data/db a partir dos dados mockados
+npm run dev          # sobe a API (http://localhost:3333) e o front (http://localhost:3000)
+```
+
+Outros comandos:
+
+| Comando | Descrição |
+| --- | --- |
+| `npm run dev:api` / `npm run dev:web` | Sobe apenas a API ou apenas o front-end |
+| `npm run typecheck` | Verifica os tipos de todos os pacotes |
+| `npm run lint` | ESLint do front-end |
+| `npm run build` | Build de produção do front-end |
+| `npm run test:e2e` | Testes Selenium (com a aplicação rodando; `WEB_URL` e `HEADLESS=false` são opcionais) |
+
+As variáveis de ambiente opcionais estão em `apps/api/.env.example` e `apps/web/.env.example`.
+
+### Dados mockados
+
+Os dados ficam em arquivos JSON: `apps/api/data/seed/` (versionados) é copiado para `apps/api/data/db/` (ignorado pelo Git), que é onde a API lê e grava. `npm run seed` restaura o estado inicial a qualquer momento.
+
+Usuários de teste (senhas armazenadas apenas como hash bcrypt):
+
+| E-mail | Senha |
+| --- | --- |
+| `estudante@acadflow.dev` | `acadflow123` |
+| `outro@acadflow.dev` | `outrasenha123` |
+
+Até a Release 02 (autenticação), todas as requisições são atribuídas a `estudante@acadflow.dev`.
 
 ## Controle de versão e baselines
 
@@ -115,8 +149,11 @@ Os CRUDs implementados devem ser validados com **Selenium**, cobrindo, conforme 
 ## Tecnologias
 
 - **Git** — controle de versão.
-- **Selenium** — automação de testes.
-- **Demais tecnologias:** a definir conforme a implementação.
+- **Next.js 16 + React 19 + Tailwind CSS 4** — front-end.
+- **Node.js + Express 5** — back-end (API REST).
+- **Arquivos JSON** — persistência dos dados (sem banco de dados nesta fase).
+- **TypeScript** — linguagem do front-end, do back-end e dos tipos compartilhados.
+- **Selenium WebDriver** — automação de testes.
 
 ## Equipe
 
