@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { after, before, describe, it } from "node:test";
 import { By, Select } from "selenium-webdriver";
 import {
-  ADMIN,
+  ALUNO,
   criarAtividade,
   criarDisciplina,
   excluirDisciplinas,
@@ -44,7 +44,7 @@ describe("Manter Atividades Acadêmicas", () => {
     disciplinaA = await criarDisciplina({ codigo: `${PREFIXO}A`, nome: "Disciplina A" });
     disciplinaB = await criarDisciplina({ codigo: `${PREFIXO}B`, nome: "Disciplina B" });
     driver = await criarDriver();
-    await entrar(driver, ADMIN);
+    await entrar(driver, ALUNO);
   });
 
   after(async () => {

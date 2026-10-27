@@ -2,7 +2,7 @@
 import assert from "node:assert/strict";
 import { after, before, describe, it } from "node:test";
 import {
-  ADMIN,
+  ALUNO,
   alterarStatus,
   criarAtividade,
   criarDisciplina,
@@ -43,7 +43,7 @@ describe("Manter Disciplinas", () => {
 
   before(async () => {
     driver = await criarDriver();
-    await entrar(driver, ADMIN);
+    await entrar(driver, ALUNO);
   });
 
   after(async () => {

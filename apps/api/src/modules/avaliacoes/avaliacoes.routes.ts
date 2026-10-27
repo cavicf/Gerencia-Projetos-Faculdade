@@ -12,27 +12,27 @@ import {
 
 export const avaliacoesRoutes = Router();
 
-avaliacoesRoutes.get("/", async (_req, res) => {
-  res.json(await listarAvaliacoes());
+avaliacoesRoutes.get("/", async (req, res) => {
+  res.json(await listarAvaliacoes(req.usuario.id));
 });
 
-avaliacoesRoutes.get("/desempenho", async (_req, res) => {
-  res.json(await calcularDesempenho());
+avaliacoesRoutes.get("/desempenho", async (req, res) => {
+  res.json(await calcularDesempenho(req.usuario.id));
 });
 
 avaliacoesRoutes.get("/:id", async (req, res) => {
-  res.json(await obterAvaliacao(req.params.id));
+  res.json(await obterAvaliacao(req.usuario.id, req.params.id));
 });
 
 avaliacoesRoutes.post("/", async (req, res) => {
-  res.status(201).json(await criarAvaliacao(validar(novaAvaliacaoSchema, req.body)));
+  res.status(201).json(await criarAvaliacao(req.usuario.id, validar(novaAvaliacaoSchema, req.body)));
 });
 
 avaliacoesRoutes.put("/:id", async (req, res) => {
-  res.json(await atualizarAvaliacao(req.params.id, validar(avaliacaoAlteradaSchema, req.body)));
+  res.json(await atualizarAvaliacao(req.usuario.id, req.params.id, validar(avaliacaoAlteradaSchema, req.body)));
 });
 
 avaliacoesRoutes.delete("/:id", async (req, res) => {
-  await excluirAvaliacao(req.params.id);
+  await excluirAvaliacao(req.usuario.id, req.params.id);
   res.status(204).end();
 });

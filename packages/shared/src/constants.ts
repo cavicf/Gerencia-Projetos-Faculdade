@@ -6,7 +6,7 @@ export const PRIORIDADES = ["alta", "media", "baixa"] as const; // RF06
 
 export const PRIORIDADE_PADRAO = "media" satisfies (typeof PRIORIDADES)[number]; // RF06
 export const STATUS_INICIAL = "pendente" satisfies (typeof STATUS_ATIVIDADE)[number];
-export const SENHA_TAMANHO_MINIMO = 8; // RF14
+export const SENHA_TAMANHO_MINIMO = 8; // RFS16 / RFS18
 export const DIAS_PROXIMOS_PRAZOS = 7; // RF09
 export const NOTA_MAXIMA = 10; // RF08
 export const COOKIE_SESSAO = "acadflow_sessao"; // RF15

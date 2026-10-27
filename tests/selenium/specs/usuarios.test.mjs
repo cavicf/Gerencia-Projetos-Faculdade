@@ -1,12 +1,13 @@
-// Release 02 – Manter Usuários (RF14): caso de teste CT-14 da MRB.
-// O sistema tem um único usuário, o administrador: a tela permite apenas editá-lo.
+// Release 02 – Manter Usuário (DRE v2.0): cadastro (RFS16 / CT-14), alteração do perfil (RFS18),
+// exclusão da conta (RFS19) e isolamento dos dados por aluno (RNF10).
+// Cada bloco usa alunos novos, cadastrados no próprio teste, para não alterar o aluno do seed.
 import assert from "node:assert/strict";
 import { after, before, describe, it } from "node:test";
-import { By } from "selenium-webdriver";
-import { ADMIN, restaurarAdmin } from "../support/api.mjs";
+import { ALUNO, cadastrarAluno, clienteComo, criarDisciplina, excluirConta, excluirDisciplinas, novoAluno, SUFIXO } from "../support/api.mjs";
 import {
   abrir,
   aguardar,
+  aguardarAusencia,
   aguardarUrl,
   clicar,
   criarDriver,
@@ -14,78 +15,213 @@ import {
   porTestId,
   preencher,
   sair,
-  seletorTestId,
-  textoEm,
-  TIMEOUT,
 } from "../support/driver.mjs";
 
-const linhaAdmin = `[data-testid="usuario-linha"][data-email="${ADMIN.email}"]`;
-const NOVA_SENHA = "nova-senha-123";
+const MSG_LOGIN_INVALIDO = "E-mail ou senha inválidos.";
+const MSG_EMAIL_DUPLICADO = "Este e-mail já está cadastrado.";
 
-async function editarAdmin(driver, { nome, email, senha }) {
-  await abrir(driver, "/usuarios");
-  await (await (await aguardar(driver, linhaAdmin)).findElement(By.css(seletorTestId("botao-editar")))).click();
-  await porTestId(driver, "usuario-form");
+async function cadastrarPelaTela(driver, { nome, email, senha }) {
+  await sair(driver);
+  await abrir(driver, "/login");
+  await clicar(driver, "link-cadastro");
+  await porTestId(driver, "cadastro-form");
   await preencher(driver, "nome", nome);
   await preencher(driver, "email", email);
   await preencher(driver, "senha", senha);
-  await clicar(driver, "botao-salvar");
+  await clicar(driver, "botao-cadastrar");
 }
 
-describe("CT-14: edição do usuário administrador", () => {
+/** Tenta entrar e confirma que o acesso foi recusado. */
+async function loginRecusado(driver, { email, senha }) {
+  await sair(driver);
+  await abrir(driver, "/login");
+  await preencher(driver, "email", email);
+  await preencher(driver, "senha", senha);
+  await clicar(driver, "botao-entrar");
+  assert.equal(await (await porTestId(driver, "form-erro")).getText(), MSG_LOGIN_INVALIDO);
+}
+
+async function textoDoErro(driver, campo) {
+  return (await porTestId(driver, `erro-${campo}`)).getText();
+}
+
+describe("Manter Usuário", () => {
   let driver;
 
   before(async () => {
-    // Também abre a sessão da API usada no `after`, antes de a senha mudar.
-    await restaurarAdmin();
     driver = await criarDriver();
-    await entrar(driver, ADMIN);
   });
 
   after(async () => {
     await driver?.quit();
-    await restaurarAdmin();
   });
 
-  it("lista apenas o admin, sem opções de cadastrar ou excluir usuários", async () => {
-    await abrir(driver, "/usuarios");
-    await aguardar(driver, linhaAdmin);
-    const linhas = await driver.findElements(By.css(seletorTestId("usuario-linha")));
-    const visiveis = (await Promise.all(linhas.map((l) => l.isDisplayed()))).filter(Boolean);
-    assert.equal(visiveis.length, 1);
-    assert.equal((await driver.findElements(By.css(seletorTestId("novo-usuario")))).length, 0);
-    assert.equal((await driver.findElements(By.css(seletorTestId("botao-excluir")))).length, 0);
+  describe("CT-14 (RFS16): cadastro com e-mail único e senha mínima", () => {
+    const aluno = novoAluno("cadastro");
+
+    after(() => excluirConta(aluno));
+
+    it("valida nome, e-mail e senha com menos de 8 caracteres", async () => {
+      await cadastrarPelaTela(driver, { nome: "", email: "invalido", senha: "1234567" });
+      await porTestId(driver, "form-erro");
+      assert.equal(await textoDoErro(driver, "nome"), "Informe o nome.");
+      assert.equal(await textoDoErro(driver, "email"), "Informe um e-mail válido.");
+      assert.equal(await textoDoErro(driver, "senha"), "A senha deve ter pelo menos 8 caracteres.");
+    });
+
+    it("recusa e-mail já cadastrado, sem diferenciar maiúsculas", async () => {
+      await cadastrarPelaTela(driver, { nome: "Outro Aluno", email: ALUNO.email.toUpperCase(), senha: "senha-valida" });
+      assert.equal(await (await porTestId(driver, "form-erro")).getText(), MSG_EMAIL_DUPLICADO);
+      assert.equal(await textoDoErro(driver, "email"), MSG_EMAIL_DUPLICADO);
+    });
+
+    it("cadastra o aluno, exibe a confirmação e permite entrar com a nova conta", async () => {
+      await cadastrarPelaTela(driver, aluno);
+      await porTestId(driver, "cadastro-sucesso");
+      await clicar(driver, "ir-para-login");
+      await aguardarUrl(driver, /\/login$/);
+
+      await entrar(driver, aluno);
+      assert.equal(await (await porTestId(driver, "usuario-logado")).getText(), aluno.nome);
+    });
   });
 
-  it("valida nome, e-mail e senha com menos de 8 caracteres", async () => {
-    await editarAdmin(driver, { nome: "", email: "invalido", senha: "1234567" });
-    await porTestId(driver, "form-erro");
-    assert.equal(await (await porTestId(driver, "erro-nome")).getText(), "Informe o nome.");
-    assert.equal(await (await porTestId(driver, "erro-email")).getText(), "Informe um e-mail válido.");
-    assert.equal(await (await porTestId(driver, "erro-senha")).getText(), "A senha deve ter pelo menos 8 caracteres.");
+  describe("RFS18: alteração do perfil confirmada pela senha atual", () => {
+    const aluno = novoAluno("perfil");
+    const NOVA_SENHA = "nova-senha-123";
+
+    async function salvarPerfil(campos) {
+      await abrir(driver, "/perfil");
+      await porTestId(driver, "perfil-form");
+      for (const [campo, valor] of Object.entries(campos)) await preencher(driver, campo, valor);
+      await clicar(driver, "botao-salvar");
+    }
+
+    before(async () => {
+      await cadastrarAluno(aluno);
+      await entrar(driver, aluno);
+    });
+
+    after(() => excluirConta({ ...aluno, senha: NOVA_SENHA }));
+
+    it("exige a senha atual e recusa senha incorreta", async () => {
+      await salvarPerfil({ nome: "Sem Senha", senhaAtual: "" });
+      assert.equal(await textoDoErro(driver, "senhaAtual"), "Informe a senha atual.");
+
+      await salvarPerfil({ nome: "Senha Errada", senhaAtual: "senha-errada" });
+      assert.equal(await textoDoErro(driver, "senhaAtual"), "Senha atual incorreta.");
+    });
+
+    it("exige que a confirmação seja igual à nova senha", async () => {
+      await salvarPerfil({ novaSenha: NOVA_SENHA, confirmacaoSenha: "outra-senha-123", senhaAtual: aluno.senha });
+      assert.equal(await textoDoErro(driver, "confirmacaoSenha"), "A confirmação deve ser igual à nova senha.");
+    });
+
+    it("não aceita o e-mail de outro usuário", async () => {
+      await salvarPerfil({ email: ALUNO.email, novaSenha: "", confirmacaoSenha: "", senhaAtual: aluno.senha });
+      assert.equal(await textoDoErro(driver, "email"), MSG_EMAIL_DUPLICADO);
+    });
+
+    it("altera nome e senha; a senha antiga deixa de valer", async () => {
+      await salvarPerfil({
+        nome: "Aluno Renomeado",
+        email: aluno.email,
+        novaSenha: NOVA_SENHA,
+        confirmacaoSenha: NOVA_SENHA,
+        senhaAtual: aluno.senha,
+      });
+      await porTestId(driver, "perfil-salvo");
+      await driver.wait(async () => (await (await porTestId(driver, "usuario-logado")).getText()) === "Aluno Renomeado");
+
+      await loginRecusado(driver, aluno);
+      await entrar(driver, { email: aluno.email, senha: NOVA_SENHA });
+    });
   });
 
-  it("altera o nome mantendo a senha quando o campo fica em branco", async () => {
-    await editarAdmin(driver, { nome: "Admin Renomeado", email: ADMIN.email, senha: "" });
-    await aguardarUrl(driver, /\/usuarios$/);
-    await driver.wait(async () => (await textoEm(await aguardar(driver, linhaAdmin), "usuario-nome")) === "Admin Renomeado", TIMEOUT);
+  describe("RFS19: exclusão da própria conta", () => {
+    const aluno = novoAluno("exclusao");
+    const CODIGO = `EX${SUFIXO}`;
 
-    // A senha original continua valendo.
-    await sair(driver);
-    await entrar(driver, ADMIN);
+    async function abrirDialogo() {
+      await abrir(driver, "/perfil");
+      await clicar(driver, "excluir-conta");
+      await porTestId(driver, "dialogo-excluir-conta");
+    }
+
+    before(async () => {
+      const cliente = await cadastrarAluno(aluno);
+      const disciplina = await cliente.chamar("POST", "/disciplinas", {
+        codigo: CODIGO,
+        nome: "Disciplina da conta excluída",
+        professor: "Prof. Selenium",
+        semestre: "2026.2",
+      });
+      await cliente.chamar("POST", "/atividades", { titulo: "Atividade da conta excluída", dataEntrega: "2026-12-01", disciplinaId: disciplina.id });
+      await entrar(driver, aluno);
+    });
+
+    after(() => excluirConta(aluno));
+
+    it("cancelar não remove nada", async () => {
+      await abrirDialogo();
+      await clicar(driver, "cancelar-exclusao");
+      await aguardarAusencia(driver, '[data-testid="dialogo-excluir-conta"]');
+      await abrir(driver, "/disciplinas");
+      await aguardar(driver, `[data-testid="disciplina-linha"][data-codigo="${CODIGO}"]`);
+    });
+
+    it("recusa a exclusão com senha incorreta", async () => {
+      await abrirDialogo();
+      await preencher(driver, "senhaExclusao", "senha-errada");
+      await clicar(driver, "confirmar-exclusao");
+      assert.equal(await textoDoErro(driver, "senhaExclusao"), "Senha atual incorreta.");
+      await clicar(driver, "cancelar-exclusao");
+    });
+
+    it("remove a conta e os dados, encerra a sessão e libera o e-mail", async () => {
+      await abrirDialogo();
+      await preencher(driver, "senhaExclusao", aluno.senha);
+      await clicar(driver, "confirmar-exclusao");
+      await aguardarUrl(driver, /\/login$/);
+
+      // A sessão foi encerrada e a conta não existe mais.
+      await abrir(driver, "/disciplinas");
+      await aguardarUrl(driver, /\/login$/);
+      await loginRecusado(driver, aluno);
+
+      // O e-mail pode ser usado em um novo cadastro, que começa sem as disciplinas da conta antiga.
+      const novaConta = await cadastrarAluno(aluno);
+      assert.deepEqual(await novaConta.chamar("GET", "/disciplinas"), []);
+      assert.deepEqual(await novaConta.chamar("GET", "/atividades"), []);
+    });
   });
 
-  it("altera a senha, que passa a ser exigida no login", async () => {
-    await editarAdmin(driver, { nome: ADMIN.nome, email: ADMIN.email, senha: NOVA_SENHA });
-    await aguardarUrl(driver, /\/usuarios$/);
+  describe("RNF10: cada aluno acessa apenas os próprios dados", () => {
+    const outro = novoAluno("isolamento");
+    const CODIGO = `IS${SUFIXO}`;
+    let disciplina;
 
-    await sair(driver);
-    await abrir(driver, "/login");
-    await preencher(driver, "email", ADMIN.email);
-    await preencher(driver, "senha", ADMIN.senha);
-    await clicar(driver, "botao-entrar");
-    assert.equal(await (await porTestId(driver, "form-erro")).getText(), "E-mail ou senha inválidos.");
+    before(async () => {
+      disciplina = await criarDisciplina({ codigo: CODIGO, nome: "Disciplina do aluno do seed" });
+      await cadastrarAluno(outro);
+      await entrar(driver, outro);
+    });
 
-    await entrar(driver, { email: ADMIN.email, senha: NOVA_SENHA });
+    after(async () => {
+      await excluirConta(outro);
+      await excluirDisciplinas(CODIGO);
+    });
+
+    it("não lista as disciplinas de outro aluno", async () => {
+      await abrir(driver, "/disciplinas");
+      await porTestId(driver, "estado-vazio");
+      await aguardarAusencia(driver, `[data-testid="disciplina-linha"][data-codigo="${CODIGO}"]`);
+    });
+
+    it("a API responde 404 ao acessar ou alterar registros de outro aluno", async () => {
+      const cliente = await clienteComo(outro);
+      assert.equal((await cliente.requisitar("GET", `/disciplinas/${disciplina.id}`)).status, 404);
+      assert.equal((await cliente.requisitar("DELETE", `/disciplinas/${disciplina.id}`)).status, 404);
+    });
   });
 });

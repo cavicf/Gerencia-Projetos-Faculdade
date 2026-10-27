@@ -11,6 +11,13 @@ const pausar = () => (PAUSA_MS > 0 ? new Promise((resolve) => setTimeout(resolve
 /** Cria um Chrome controlado pelo Selenium. Use HEADLESS=false para ver o navegador. */
 export async function criarDriver() {
   const opcoes = new chrome.Options().addArguments("--window-size=1280,900", "--lang=pt-BR");
+  // Sem o gerenciador de senhas: o aviso de "senha vazada" do Chrome abre por cima da página e engole os cliques.
+  opcoes.addArguments("--disable-features=PasswordLeakDetection,PasswordCheck");
+  opcoes.setUserPreferences({
+    credentials_enable_service: false,
+    "profile.password_manager_enabled": false,
+    "profile.password_manager_leak_detection": false,
+  });
   if (process.env.HEADLESS !== "false") opcoes.addArguments("--headless=new");
   return new Builder().forBrowser("chrome").setChromeOptions(opcoes).build();
 }

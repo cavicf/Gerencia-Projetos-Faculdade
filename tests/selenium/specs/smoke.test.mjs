@@ -3,7 +3,7 @@
 import assert from "node:assert/strict";
 import { after, before, describe, it } from "node:test";
 import { By } from "selenium-webdriver";
-import { ADMIN } from "../support/api.mjs";
+import { ALUNO } from "../support/api.mjs";
 import {
   abrir,
   aguardarUrl,
@@ -20,7 +20,7 @@ describe("Smoke – aplicação no ar", () => {
 
   before(async () => {
     driver = await criarDriver();
-    await entrar(driver, ADMIN);
+    await entrar(driver, ALUNO);
   });
 
   after(async () => {

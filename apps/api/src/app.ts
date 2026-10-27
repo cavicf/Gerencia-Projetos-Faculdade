@@ -9,7 +9,7 @@ import { avaliacoesRoutes } from "./modules/avaliacoes/avaliacoes.routes";
 import { disciplinasRoutes } from "./modules/disciplinas/disciplinas.routes";
 import { healthRoutes } from "./modules/health/health.routes";
 import { resumoRoutes } from "./modules/resumo/resumo.routes";
-import { usuariosRoutes } from "./modules/usuarios/usuarios.routes";
+import { perfilRoutes } from "./modules/usuarios/usuarios.routes";
 
 export function criarApp() {
   const app = express();
@@ -24,7 +24,7 @@ export function criarApp() {
   // A partir daqui todas exigem sessão válida (RF15).
   app.use("/api", autenticar);
   app.use("/api/resumo", resumoRoutes);
-  app.use("/api/usuarios", usuariosRoutes);
+  app.use("/api/perfil", perfilRoutes);
   app.use("/api/disciplinas", disciplinasRoutes);
   app.use("/api/atividades", atividadesRoutes);
   app.use("/api/avaliacoes", avaliacoesRoutes);

@@ -127,19 +127,21 @@ A análise das Releases 01 e 02 (escopo, regras de negócio, API, telas, testes 
    - Front-end: <http://localhost:3000>
    - API: <http://localhost:3333/api/health>
 
-5. Acesse <http://localhost:3000> e entre com o usuário administrador:
+5. Acesse <http://localhost:3000> e entre com o aluno de exemplo:
 
    | E-mail | Senha |
    | --- | --- |
-   | `admin@unifei.edu.br` | `12345678` |
+   | `aluno@unifei.edu.br` | `12345678` |
 
-   O administrador é o único usuário do sistema e tem acesso a todos os cadastros. Na tela **Usuários** é possível apenas editá-lo (nome, e-mail e senha); não há cadastro nem exclusão de usuários. Todas as telas, exceto `/login`, exigem login.
+   Novos alunos podem criar a própria conta em **Cadastre-se** (`/cadastro`). Cada aluno vê e altera apenas as próprias disciplinas, atividades e notas. Em **Meu perfil** (`/perfil`) o aluno altera nome, e-mail e senha ou exclui a conta, o que remove também todos os seus dados; as duas operações pedem a senha atual. Todas as telas, exceto `/login` e `/cadastro`, exigem login.
+
+   > Ao atualizar a partir de uma versão anterior, rode `npm run seed` de novo: os registros passaram a ter dono (`usuarioId`).
 
 Para voltar ao estado inicial dos dados a qualquer momento, rode `npm run seed` novamente (com ou sem a aplicação rodando).
 
 ### Testes automatizados (Selenium)
 
-Os testes usam a aplicação real, então **a API e o front-end precisam estar rodando** (passo 4) em outro terminal. Recomenda-se rodar `npm run seed` antes, para partir dos dados iniciais. Cada teste cria e remove os próprios dados e, ao final, o administrador volta à senha `12345678`.
+Os testes usam a aplicação real, então **a API e o front-end precisam estar rodando** (passo 4) em outro terminal. Recomenda-se rodar `npm run seed` antes, para partir dos dados iniciais. Cada teste cria e remove os próprios dados; os testes de perfil e de exclusão de conta usam alunos criados na hora, então o aluno de exemplo nunca é alterado.
 
 **Modo headless** (sem abrir janela, mais rápido — ideal para conferir tudo de uma vez):
 
@@ -167,7 +169,7 @@ WEB_URL=http://localhost:3010 API_URL=http://localhost:3333 npm run test:e2e
 | `disciplinas.test.mjs` | CT-01 a CT-03 — Manter Disciplinas |
 | `atividades.test.mjs` | CT-04 a CT-07 — Manter Atividades |
 | `avaliacoes.test.mjs` | CT-08 — Manter Avaliações |
-| `usuarios.test.mjs` | CT-14 — Edição do usuário administrador |
+| `usuarios.test.mjs` | CT-14 — Cadastro (RFS16), alteração do perfil (RFS18), exclusão da conta (RFS19) e isolamento dos dados por aluno (RNF10) |
 | `auth.test.mjs` | CT-15 — Login, logout e rotas protegidas |
 
 ### Outros comandos

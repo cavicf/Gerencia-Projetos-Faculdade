@@ -3,6 +3,8 @@ import { Router, type CookieOptions } from "express";
 import { z } from "zod";
 import { validar } from "../../lib/validacao";
 import { autenticar, tokenDaRequisicao } from "../../middlewares/autenticacao";
+import { cadastroSchema } from "../usuarios/usuarios.schema";
+import { cadastrarUsuario } from "../usuarios/usuarios.service";
 import { entrar, sair } from "./auth.service";
 
 export const authRoutes = Router();
@@ -12,12 +14,17 @@ const credenciaisSchema = z.object({
   senha: z.string({ error: "Informe a senha." }).min(1, "Informe a senha."),
 }) satisfies z.ZodType<Credenciais>;
 
-const opcoesCookie: CookieOptions = {
+export const opcoesCookie: CookieOptions = {
   httpOnly: true,
   sameSite: "lax",
   path: "/",
   secure: process.env.NODE_ENV === "production",
 };
+
+/** RFS16 – cadastro público ("Cadastre-se"); depois o aluno entra pela tela de login. */
+authRoutes.post("/cadastro", async (req, res) => {
+  res.status(201).json(await cadastrarUsuario(validar(cadastroSchema, req.body)));
+});
 
 authRoutes.post("/login", async (req, res) => {
   const { usuario, sessao } = await entrar(validar(credenciaisSchema, req.body));

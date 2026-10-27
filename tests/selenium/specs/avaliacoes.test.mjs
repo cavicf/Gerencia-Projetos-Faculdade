@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { after, before, describe, it } from "node:test";
 import { By, Select } from "selenium-webdriver";
 import {
-  ADMIN,
+  ALUNO,
   alterarStatus,
   criarAtividade,
   criarDisciplina,
@@ -58,7 +58,7 @@ describe("CT-08: registro de nota e peso e cálculo de desempenho por disciplina
     await alterarStatus(ids.trabalho, "concluida");
 
     driver = await criarDriver();
-    await entrar(driver, ADMIN);
+    await entrar(driver, ALUNO);
   });
 
   after(async () => {

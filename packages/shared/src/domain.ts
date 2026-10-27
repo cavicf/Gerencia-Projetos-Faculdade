@@ -14,7 +14,12 @@ interface Registro {
   atualizadoEm: DataHoraISO;
 }
 
-/** RF14 / RF15 – Módulo 1: Controle de Acesso. Há um único usuário, o administrador, com acesso a tudo. */
+/** Registro pertencente a um aluno (RNF10 – cada aluno acessa apenas os próprios dados). */
+interface RegistroDoUsuario extends Registro {
+  usuarioId: string;
+}
+
+/** RFS16–RFS19 (DRE v2.0) – Módulo 1: Controle de Acesso. */
 export interface Usuario extends Registro {
   nome: string;
   email: string;
@@ -24,8 +29,20 @@ export interface Usuario extends Registro {
 
 export type UsuarioPublico = Omit<Usuario, "senhaHash">;
 
-/** Corpo de PUT `/usuarios/:id`. Senha vazia mantém a atual. */
+/** Corpo de POST `/auth/cadastro` (RFS16). */
 export type UsuarioEntrada = Pick<Usuario, "nome" | "email"> & { senha: string };
+
+/** Corpo de PUT `/perfil` (RFS18). Nova senha em branco mantém a atual; a senha atual é sempre exigida. */
+export type PerfilEntrada = Pick<Usuario, "nome" | "email"> & {
+  novaSenha: string;
+  confirmacaoSenha: string;
+  senhaAtual: string;
+};
+
+/** Corpo de DELETE `/perfil` (RFS19). */
+export interface ExclusaoPerfil {
+  senhaAtual: string;
+}
 
 /** Corpo de POST `/auth/login`. */
 export interface Credenciais {
@@ -40,8 +57,8 @@ export interface Sessao extends Registro {
 }
 
 /** RF01–RF03 – Módulo 2: Gestão de Disciplinas. */
-export interface Disciplina extends Registro {
-  /** Único por semestre (RF01). */
+export interface Disciplina extends RegistroDoUsuario {
+  /** Único por aluno e semestre (RF01). */
   codigo: string;
   nome: string;
   professor: string;
@@ -59,7 +76,7 @@ export interface DisciplinaResumo extends Disciplina {
 export type DisciplinaEntrada = Pick<Disciplina, "codigo" | "nome" | "professor" | "semestre">;
 
 /** RF04–RF07 – Módulo 3: Gestão de Atividades. */
-export interface Atividade extends Registro {
+export interface Atividade extends RegistroDoUsuario {
   disciplinaId: string;
   titulo: string;
   descricao: string;
@@ -84,7 +101,7 @@ export type AtividadeEntrada = Pick<Atividade, "titulo" | "dataEntrega" | "disci
   Partial<Pick<Atividade, "descricao" | "tipo" | "prioridade">>;
 
 /** RF08 – nota e peso de uma atividade concluída. */
-export interface Avaliacao extends Registro {
+export interface Avaliacao extends RegistroDoUsuario {
   atividadeId: string;
   peso: number;
   nota: number;

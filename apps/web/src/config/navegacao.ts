@@ -1,4 +1,4 @@
-import { IconeGrafico, IconeLista, IconeLivro, IconePainel, IconeUsuarios } from "@/components/ui/icones";
+import { IconeGrafico, IconeLista, IconeLivro, IconePainel, IconeUsuario } from "@/components/ui/icones";
 
 export interface ItemNavegacao {
   href: string;
@@ -12,5 +12,5 @@ export const NAVEGACAO: ItemNavegacao[] = [
   { href: "/disciplinas", rotulo: "Disciplinas", icone: IconeLivro },
   { href: "/atividades", rotulo: "Atividades", icone: IconeLista },
   { href: "/avaliacoes", rotulo: "Avaliações", icone: IconeGrafico },
-  { href: "/usuarios", rotulo: "Usuários", icone: IconeUsuarios },
+  { href: "/perfil", rotulo: "Meu perfil", icone: IconeUsuario },
 ];

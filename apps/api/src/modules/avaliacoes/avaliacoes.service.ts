@@ -3,12 +3,12 @@ import { db } from "../../lib/db";
 import { conflito, dadosInvalidos, naoEncontrado } from "../../lib/errors";
 import { agora } from "../../lib/validacao";
 
-/** RF08 – avaliações com a atividade e a disciplina vinculadas. */
-export async function listarAvaliacoes(): Promise<AvaliacaoDetalhada[]> {
+/** RF08 – avaliações do aluno com a atividade e a disciplina vinculadas. */
+export async function listarAvaliacoes(usuarioId: string): Promise<AvaliacaoDetalhada[]> {
   const [avaliacoes, atividades, disciplinas] = await Promise.all([
-    db.avaliacoes.listar(),
-    db.atividades.listar(),
-    db.disciplinas.listar(),
+    db.avaliacoes.listar((av) => av.usuarioId === usuarioId),
+    db.atividades.listar((a) => a.usuarioId === usuarioId),
+    db.disciplinas.listar((d) => d.usuarioId === usuarioId),
   ]);
   const atividadePorId = new Map(atividades.map((a) => [a.id, a]));
   const disciplinaPorId = new Map(disciplinas.map((d) => [d.id, d]));
@@ -33,9 +33,9 @@ export async function listarAvaliacoes(): Promise<AvaliacaoDetalhada[]> {
 }
 
 /** RF08 – "acompanhar seu desempenho em cada disciplina": média ponderada Σ(nota·peso) / Σpeso. */
-export async function calcularDesempenho(): Promise<DesempenhoDisciplina[]> {
+export async function calcularDesempenho(usuarioId: string): Promise<DesempenhoDisciplina[]> {
   const porDisciplina = new Map<string, DesempenhoDisciplina & { somaNotasPonderadas: number }>();
-  for (const av of await listarAvaliacoes()) {
+  for (const av of await listarAvaliacoes(usuarioId)) {
     const grupo = porDisciplina.get(av.disciplinaId) ?? {
       disciplinaId: av.disciplinaId,
       disciplinaCodigo: av.disciplinaCodigo,
@@ -57,15 +57,16 @@ export async function calcularDesempenho(): Promise<DesempenhoDisciplina[]> {
   }));
 }
 
-export async function obterAvaliacao(id: string): Promise<Avaliacao> {
-  const avaliacao = await db.avaliacoes.buscar((av) => av.id === id);
+/** Busca uma avaliação do aluno; registros de outros usuários respondem 404 (RNF10). */
+export async function obterAvaliacao(usuarioId: string, id: string): Promise<Avaliacao> {
+  const avaliacao = await db.avaliacoes.buscar((av) => av.id === id && av.usuarioId === usuarioId);
   if (!avaliacao) throw naoEncontrado("Avaliação não encontrada.");
   return avaliacao;
 }
 
 /** RF08 – só atividades concluídas recebem nota, e cada atividade tem no máximo uma avaliação. */
-export async function criarAvaliacao(dados: AvaliacaoEntrada): Promise<Avaliacao> {
-  const atividade = await db.atividades.buscar((a) => a.id === dados.atividadeId);
+export async function criarAvaliacao(usuarioId: string, dados: AvaliacaoEntrada): Promise<Avaliacao> {
+  const atividade = await db.atividades.buscar((a) => a.id === dados.atividadeId && a.usuarioId === usuarioId);
   if (!atividade) throw dadosInvalidos({ atividadeId: "Escolha uma atividade cadastrada." });
   if (atividade.status !== "concluida") {
     throw dadosInvalidos({ atividadeId: "Só é possível registrar nota de atividades concluídas." });
@@ -76,6 +77,7 @@ export async function criarAvaliacao(dados: AvaliacaoEntrada): Promise<Avaliacao
 
   const momento = agora();
   return db.avaliacoes.inserir({
+    usuarioId,
     atividadeId: atividade.id,
     peso: dados.peso,
     nota: dados.nota,
@@ -84,12 +86,16 @@ export async function criarAvaliacao(dados: AvaliacaoEntrada): Promise<Avaliacao
   });
 }
 
-export async function atualizarAvaliacao(id: string, dados: Pick<Avaliacao, "peso" | "nota">): Promise<Avaliacao> {
-  await obterAvaliacao(id);
+export async function atualizarAvaliacao(
+  usuarioId: string,
+  id: string,
+  dados: Pick<Avaliacao, "peso" | "nota">,
+): Promise<Avaliacao> {
+  await obterAvaliacao(usuarioId, id);
   return (await db.avaliacoes.atualizar(id, { peso: dados.peso, nota: dados.nota, atualizadoEm: agora() }))!;
 }
 
-export async function excluirAvaliacao(id: string): Promise<void> {
-  await obterAvaliacao(id);
+export async function excluirAvaliacao(usuarioId: string, id: string): Promise<void> {
+  await obterAvaliacao(usuarioId, id);
   await db.avaliacoes.remover((av) => av.id === id);
 }

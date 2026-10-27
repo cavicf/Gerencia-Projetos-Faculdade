@@ -4,13 +4,18 @@ import { db } from "../../lib/db";
 
 export const resumoRoutes = Router();
 
-/** Totais de registros cadastrados. Base do RF13. */
-resumoRoutes.get("/", async (_req, res) => {
+/** Totais de registros do aluno logado. Base do RF13. */
+resumoRoutes.get("/", async (req, res) => {
+  const doUsuario = ({ usuarioId }: { usuarioId: string }) => usuarioId === req.usuario.id;
   const [disciplinas, atividades, avaliacoes] = await Promise.all([
-    db.disciplinas.contar(),
-    db.atividades.contar(),
-    db.avaliacoes.contar(),
+    db.disciplinas.listar(doUsuario),
+    db.atividades.listar(doUsuario),
+    db.avaliacoes.listar(doUsuario),
   ]);
-  const resumo: ResumoUsuario = { disciplinas, atividades, avaliacoes };
+  const resumo: ResumoUsuario = {
+    disciplinas: disciplinas.length,
+    atividades: atividades.length,
+    avaliacoes: avaliacoes.length,
+  };
   res.json(resumo);
 });

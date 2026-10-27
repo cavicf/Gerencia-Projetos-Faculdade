@@ -1,6 +1,7 @@
 [
   {
     "id": "e72728d9-7c89-4bcb-be38-d4d5910d9f4d",
+    "usuarioId": "f93a3fe9-bec4-4444-b547-36a2b0f1bd52",
     "codigo": "SDES06",
     "nome": "Gerência de Projetos de Software",
     "professor": "Prof. Responsável SDES06",
@@ -10,6 +11,7 @@
   },
   {
     "id": "947197de-8c57-43fe-9644-8a817293364d",
+    "usuarioId": "f93a3fe9-bec4-4444-b547-36a2b0f1bd52",
     "codigo": "CCO016",
     "nome": "Engenharia de Software",
     "professor": "Prof. Responsável CCO016",
@@ -19,6 +21,7 @@
   },
   {
     "id": "e6160edf-f16f-4bac-b3fc-eeab8ef1d75a",
+    "usuarioId": "f93a3fe9-bec4-4444-b547-36a2b0f1bd52",
     "codigo": "MAT001",
     "nome": "Cálculo I",
     "professor": "Prof. Responsável MAT001",

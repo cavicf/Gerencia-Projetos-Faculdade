@@ -33,10 +33,6 @@ export class JsonCollection<T extends ComId> {
     return (await this.ler()).find(filtro);
   }
 
-  async contar(): Promise<number> {
-    return (await this.ler()).length;
-  }
-
   async inserir(dados: Omit<T, "id">): Promise<T> {
     return this.alterar((itens) => {
       const novo = { ...dados, id: randomUUID() } as T;

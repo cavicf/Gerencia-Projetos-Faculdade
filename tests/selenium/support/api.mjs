@@ -3,8 +3,8 @@
 
 export const API_URL = process.env.API_URL ?? "http://localhost:3333";
 
-/** Único usuário do sistema, definido no seed (apps/api/data/seed/usuarios.json). */
-export const ADMIN = { nome: "Administrador", email: "admin@unifei.edu.br", senha: "12345678" };
+/** Aluno base do seed (apps/api/data/seed/usuarios.json), dono dos dados mockados. */
+export const ALUNO = { nome: "Aluno AcadFlow", email: "aluno@unifei.edu.br", senha: "12345678" };
 
 /** Sufixo único por execução, para os testes não colidirem com dados de execuções anteriores. */
 export const SUFIXO = Date.now().toString(36).slice(-5).toUpperCase();
@@ -38,37 +38,55 @@ export async function clienteComo({ email, senha }) {
   return { requisitar, chamar };
 }
 
-let admin;
-/** Cliente autenticado como o admin do seed, reaproveitado entre as chamadas. */
-const comoAdmin = async () => (admin ??= await clienteComo(ADMIN));
+let aluno;
+/** Cliente autenticado como o aluno do seed, reaproveitado entre as chamadas. */
+const comoAluno = async () => (aluno ??= await clienteComo(ALUNO));
 
-/** Devolve o admin aos dados do seed (nome, e-mail e senha). */
-export async function restaurarAdmin() {
-  const [usuario] = await (await comoAdmin()).chamar("GET", "/usuarios");
-  await (await comoAdmin()).chamar("PUT", `/usuarios/${usuario.id}`, ADMIN);
+/** Dados de um aluno novo, com e-mail único por execução. */
+export const novoAluno = (apelido) => ({
+  nome: `Aluno ${apelido}`,
+  email: `selenium.${apelido}.${SUFIXO}@exemplo.com`.toLowerCase(),
+  senha: "senha-de-teste",
+});
+
+/** RFS16 – cadastra o aluno pela API e devolve um cliente autenticado como ele. */
+export async function cadastrarAluno(dados) {
+  const resposta = await fetch(`${API_URL}/api/auth/cadastro`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(dados),
+  });
+  if (resposta.status !== 201) throw new Error(`Cadastro de ${dados.email} falhou: ${resposta.status}`);
+  return clienteComo(dados);
+}
+
+/** RFS19 – exclui a conta (e os dados) do aluno, se ela ainda existir. Usado na limpeza dos testes. */
+export async function excluirConta({ email, senha }) {
+  const cliente = await clienteComo({ email, senha }).catch(() => null);
+  await cliente?.chamar("DELETE", "/perfil", { senhaAtual: senha });
 }
 
 /** Exclui as disciplinas cujo código começa com o prefixo e, em cascata, suas atividades e notas. */
 export async function excluirDisciplinas(prefixo) {
   for (const d of await listarDisciplinas()) {
-    if (d.codigo.startsWith(prefixo)) await (await comoAdmin()).chamar("DELETE", `/disciplinas/${d.id}`);
+    if (d.codigo.startsWith(prefixo)) await (await comoAluno()).chamar("DELETE", `/disciplinas/${d.id}`);
   }
 }
 
 export const criarDisciplina = async (dados) =>
-  (await comoAdmin()).chamar("POST", "/disciplinas", { professor: "Prof. Selenium", semestre: "2026.2", ...dados });
+  (await comoAluno()).chamar("POST", "/disciplinas", { professor: "Prof. Selenium", semestre: "2026.2", ...dados });
 
-export const listarDisciplinas = async () => (await comoAdmin()).chamar("GET", "/disciplinas");
+export const listarDisciplinas = async () => (await comoAluno()).chamar("GET", "/disciplinas");
 
 export const criarAtividade = async (dados) =>
-  (await comoAdmin()).chamar("POST", "/atividades", { dataEntrega: "2026-12-01", ...dados });
+  (await comoAluno()).chamar("POST", "/atividades", { dataEntrega: "2026-12-01", ...dados });
 
-export const obterAtividade = async (id) => (await comoAdmin()).chamar("GET", `/atividades/${id}`);
+export const obterAtividade = async (id) => (await comoAluno()).chamar("GET", `/atividades/${id}`);
 
 export const listarAtividades = async (disciplinaId) =>
-  (await comoAdmin()).chamar("GET", `/atividades?disciplinaId=${disciplinaId}`);
+  (await comoAluno()).chamar("GET", `/atividades?disciplinaId=${disciplinaId}`);
 
 export const alterarStatus = async (id, status) =>
-  (await comoAdmin()).chamar("PATCH", `/atividades/${id}/status`, { status });
+  (await comoAluno()).chamar("PATCH", `/atividades/${id}/status`, { status });
 
-export const criarAvaliacao = async (dados) => (await comoAdmin()).chamar("POST", "/avaliacoes", dados);
+export const criarAvaliacao = async (dados) => (await comoAluno()).chamar("POST", "/avaliacoes", dados);
