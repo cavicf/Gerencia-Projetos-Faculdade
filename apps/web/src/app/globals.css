@@ -1,0 +1,30 @@
+@import "tailwindcss";
+
+/* Paleta do Guia de Design AcadFlow v1.0: azul-marinho para estrutura, verde para ações e conclusão. */
+@theme inline {
+  --color-azul: #1b2f5e;
+  --color-azul-escuro: #12224a;
+  --color-azul-claro: #e8eef9;
+  --color-verde: #2f9e52;
+  --color-verde-escuro: #268444;
+  --color-verde-claro: #e3f4e8;
+  --color-fundo: #f4f6fa;
+  --color-borda: #e3e7ef;
+  --color-atencao: #e9a93a;
+  --color-atencao-claro: #fcf0d8;
+  --color-atencao-texto: #8a5a0b;
+  --color-alerta: #d9473b;
+  --color-alerta-escuro: #bd3a2f;
+  --color-alerta-claro: #fde8e6;
+  --color-cinza: #66708a;
+  --color-cinza-claro: #edf0f5;
+
+  --font-sans: var(--font-manrope);
+  --font-titulo: var(--font-sora);
+}
+
+body {
+  background: var(--color-fundo);
+  color: var(--color-azul);
+  font-family: var(--font-manrope), Arial, Helvetica, sans-serif;
+}

@@ -1,0 +1,28 @@
+{
+  "name": "@acadflow/api",
+  "version": "0.1.0",
+  "private": true,
+  "description": "API REST do AcadFlow (Node.js + Express) com persistência em arquivos JSON.",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch --clear-screen=false src/server.ts",
+    "start": "tsx src/server.ts",
+    "seed": "tsx scripts/seed.ts",
+    "hash-senha": "tsx scripts/hash-senha.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@acadflow/shared": "*",
+    "bcryptjs": "^3.0.3",
+    "cors": "^2.8.6",
+    "express": "^5.3.0",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
+    "@types/node": "^20",
+    "tsx": "^4.23.15",
+    "typescript": "^5"
+  }
+}

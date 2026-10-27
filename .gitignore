@@ -1,0 +1,31 @@
+# dependências
+node_modules/
+
+# build
+.next/
+dist/
+out/
+*.tsbuildinfo
+
+# dados de execução da API (gerados a partir de apps/api/data/seed)
+apps/api/data/db/
+apps/api/data/backups/
+
+# ambiente
+.env
+.env.*
+!.env.example
+
+# testes
+tests/selenium/screenshots/
+coverage/
+
+# sistema / editores
+.DS_Store
+.vscode/
+.idea/
+npm-debug.log*
+
+# next.js
+next-env.d.ts
+.vercel/

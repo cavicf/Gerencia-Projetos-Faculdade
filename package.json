@@ -1,0 +1,28 @@
+{
+  "name": "acadflow",
+  "version": "0.1.0",
+  "private": true,
+  "description": "AcadFlow – Gerenciador de Atividades Acadêmicas (GPR-2026-01, Equipe CRLJ)",
+  "workspaces": [
+    "apps/*",
+    "packages/*",
+    "tests/*"
+  ],
+  "scripts": {
+    "dev": "concurrently -n api,web -c blue,green \"npm run dev -w @acadflow/api\" \"npm run dev -w @acadflow/web\"",
+    "dev:api": "npm run dev -w @acadflow/api",
+    "dev:web": "npm run dev -w @acadflow/web",
+    "build": "npm run build -w @acadflow/web",
+    "lint": "npm run lint -w @acadflow/web",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "seed": "npm run seed -w @acadflow/api",
+    "test:e2e": "npm test -w @acadflow/selenium",
+    "test:e2e:navegador": "npm run test:navegador -w @acadflow/selenium"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

@@ -72,23 +72,121 @@ O DRE e o Cronograma devem ser atualizados durante o projeto, sempre que necess�
 - Criar a tag de baseline da release.
 - Apresentar os resultados ao professor.
 
-## Organização sugerida do repositório
+## Organização do repositório
 
 ```text
 .
-├── docs/
-│   ├── requisitos/
-│   ├── estimativa/
-│   ├── cronograma/
-│   ├── rastreabilidade/
-│   └── revisao-cruzada/
-├── src/
+├── analysis/          # DRE, EST, CRO, MRB, Plano de Projeto e análises das releases
+├── apps/
+│   ├── api/           # Back-end Node.js + Express (dados em arquivos JSON)
+│   └── web/           # Front-end Next.js (App Router) + Tailwind CSS
+├── packages/
+│   └── shared/        # Tipos de domínio e constantes compartilhados
 ├── tests/
-│   └── selenium/
+│   └── selenium/      # Testes automatizados com Selenium WebDriver
 └── README.md
 ```
 
-A estrutura poderá ser adaptada conforme as tecnologias utilizadas no projeto.
+A análise das Releases 01 e 02 (escopo, regras de negócio, API, telas, testes e inconsistências encontradas) está em [`analysis/ANALISE_RELEASES_01_02.md`](analysis/ANALISE_RELEASES_01_02.md).
+
+## Como executar
+
+### Pré-requisitos
+
+- **Node.js 20 ou superior** (com npm) — confira com `node -v`.
+- **Google Chrome** instalado — usado pelos testes Selenium. O driver do Chrome é baixado automaticamente pelo Selenium na primeira execução.
+- Portas **3000** (front-end) e **3333** (API) livres.
+
+### Passo a passo
+
+1. Clone o repositório e entre na pasta:
+
+   ```bash
+   git clone https://github.com/cavicf/Gerencia-Projetos-Faculdade.git
+   cd Gerencia-Projetos-Faculdade
+   ```
+
+2. Instale as dependências de todos os pacotes (front-end, API, tipos compartilhados e testes):
+
+   ```bash
+   npm install
+   ```
+
+3. Crie os dados iniciais. O comando copia os dados mockados de `apps/api/data/seed/` para `apps/api/data/db/`, de onde a API lê e grava:
+
+   ```bash
+   npm run seed
+   ```
+
+4. Suba a API e o front-end juntos:
+
+   ```bash
+   npm run dev
+   ```
+
+   - Front-end: <http://localhost:3000>
+   - API: <http://localhost:3333/api/health>
+
+5. Acesse <http://localhost:3000> e entre com o aluno de exemplo:
+
+   | E-mail | Senha |
+   | --- | --- |
+   | `aluno@unifei.edu.br` | `12345678` |
+
+   Novos alunos podem criar a própria conta em **Cadastre-se** (`/cadastro`). Cada aluno vê e altera apenas as próprias disciplinas, atividades e notas. Em **Meu perfil** (`/perfil`) o aluno altera nome, e-mail e senha ou exclui a conta, o que remove também todos os seus dados; as duas operações pedem a senha atual. Todas as telas, exceto `/login` e `/cadastro`, exigem login.
+
+   > Ao atualizar a partir de uma versão anterior, rode `npm run seed` de novo: os registros passaram a ter dono (`usuarioId`).
+
+Para voltar ao estado inicial dos dados a qualquer momento, rode `npm run seed` novamente (com ou sem a aplicação rodando).
+
+### Testes automatizados (Selenium)
+
+Os testes usam a aplicação real, então **a API e o front-end precisam estar rodando** (passo 4) em outro terminal. Recomenda-se rodar `npm run seed` antes, para partir dos dados iniciais. Cada teste cria e remove os próprios dados; os testes de perfil e de exclusão de conta usam alunos criados na hora, então o aluno de exemplo nunca é alterado.
+
+**Modo headless** (sem abrir janela, mais rápido — ideal para conferir tudo de uma vez):
+
+```bash
+npm run test:e2e
+```
+
+**Modo navegador** (abre o Chrome e pausa entre as ações, para acompanhar os testes na tela):
+
+```bash
+npm run test:e2e:navegador
+```
+
+A velocidade do modo navegador é configurada em `tests/selenium/navegador.env` (`PAUSA_MS`, em milissegundos). Ao final, os dois modos mostram o total de testes aprovados (`ℹ pass`) e reprovados (`ℹ fail`).
+
+Se o front-end ou a API estiverem em outras portas, informe as URLs:
+
+```bash
+WEB_URL=http://localhost:3010 API_URL=http://localhost:3333 npm run test:e2e
+```
+
+| Arquivo (`tests/selenium/specs/`) | Casos de teste |
+| --- | --- |
+| `smoke.test.mjs` | Aplicação no ar, totais da tela inicial e navegação |
+| `disciplinas.test.mjs` | CT-01 a CT-03 — Manter Disciplinas |
+| `atividades.test.mjs` | CT-04 a CT-07 — Manter Atividades |
+| `avaliacoes.test.mjs` | CT-08 — Manter Avaliações |
+| `usuarios.test.mjs` | CT-14 — Cadastro (RFS16), alteração do perfil (RFS18), exclusão da conta (RFS19) e isolamento dos dados por aluno (RNF10) |
+| `auth.test.mjs` | CT-15 — Login, logout e rotas protegidas |
+
+### Outros comandos
+
+| Comando | Descrição |
+| --- | --- |
+| `npm run dev:api` / `npm run dev:web` | Sobe apenas a API ou apenas o front-end |
+| `npm run seed` | Restaura os dados iniciais |
+| `npm run typecheck` | Verifica os tipos de todos os pacotes |
+| `npm run lint` | ESLint do front-end |
+| `npm run build` | Build de produção do front-end |
+
+As variáveis de ambiente opcionais estão em `apps/api/.env.example` e `apps/web/.env.example`.
+
+### Dados mockados
+
+Não há banco de dados nesta fase: os dados ficam em arquivos JSON. `apps/api/data/seed/` é versionado e `apps/api/data/db/` (ignorado pelo Git) é a cópia usada pela API. A senha do usuário é guardada apenas como hash bcrypt.
 
 ## Controle de versão e baselines
 
@@ -115,8 +213,11 @@ Os CRUDs implementados devem ser validados com **Selenium**, cobrindo, conforme 
 ## Tecnologias
 
 - **Git** — controle de versão.
-- **Selenium** — automação de testes.
-- **Demais tecnologias:** a definir conforme a implementação.
+- **Next.js 16 + React 19 + Tailwind CSS 4** — front-end.
+- **Node.js + Express 5** — back-end (API REST).
+- **Arquivos JSON** — persistência dos dados (sem banco de dados nesta fase).
+- **TypeScript** — linguagem do front-end, do back-end e dos tipos compartilhados.
+- **Selenium WebDriver** — automação de testes.
 
 ## Equipe
 
@@ -130,8 +231,8 @@ Os CRUDs implementados devem ser validados com **Selenium**, cobrindo, conforme 
 | Release | Status |
 | --- | --- |
 | 00 | Concluída |
-| 01 | Pendente |
-| 02 | Pendente |
+| 01 | Concluída |
+| 02 | Concluída |
 | 03 | Pendente |
 | 04 | Pendente |
 
