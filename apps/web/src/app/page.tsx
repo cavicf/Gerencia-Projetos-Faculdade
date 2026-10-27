@@ -11,16 +11,16 @@ export default function InicioPage() {
     <>
       <PageHeader
         titulo="Bem-vindo ao AcadFlow"
-        descricao="Organize provas, trabalhos e tarefas de todas as suas disciplinas em um só lugar."
+        descricao="Provas, trabalhos e tarefas de todas as disciplinas em um só lugar."
+        // RNF02: cadastro de atividade em até 3 interações a partir da tela inicial.
         acoes={
-          // RNF02: cadastro de atividade em até 3 interações a partir da tela inicial.
           <Link href="/atividades/nova" data-testid="inicio-nova-atividade" className={botaoPrimario}>
             Nova atividade
           </Link>
         }
       />
 
-      <section className="mb-8 grid gap-4 sm:grid-cols-3">
+      <section className="mb-8 grid gap-4 sm:grid-cols-4">
         {NAVEGACAO.filter((item) => item.href !== "/").map((item) => (
           <Link
             key={item.href}

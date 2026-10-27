@@ -206,4 +206,54 @@ Decisões tomadas na implementação (registrar no DRE se a equipe concordar):
 - Semestre no formato `AAAA.1` ou `AAAA.2`.
 - Na atividade, `tipo` assume `tarefa` quando não informado (só título, data e disciplina são obrigatórios — RF04/RNF02).
 - Status é alterado direto na lista (RF05); o formulário de edição não mexe no status.
-- Registros de outro estudante respondem 404, sem revelar que existem (RNF10).
+- Na Release 01 os registros eram isolados por estudante (RNF10); com a decisão da Release 02 (seção 13) o sistema passou a ter um único usuário administrador, e esse isolamento deixou de se aplicar.
+
+## 13. Release 02 — escopo redefinido: um único usuário administrador
+
+Por decisão de negócio, a equipe simplificou o módulo de Usuários (solicitação de mudança — DRE seção 6, resolve a inconsistência **I-1**). Uma primeira versão com papéis Administrador/Aluno chegou a ser implementada e foi descartada:
+
+- **Sem papéis:** o sistema tem **um único usuário, o Administrador**, com acesso global a todos os cadastros (disciplinas, atividades e avaliações). Os registros não têm dono.
+- **Gestão de usuários:** a tela **Usuários** lista o administrador e permite **apenas editá-lo** (nome, e-mail e senha). Não há cadastro nem exclusão de usuários.
+- **Login** (RF15) por e-mail e senha, com sessão em cookie `httpOnly` (8 h) gravada em `sessoes.json`; o logout invalida a sessão no servidor.
+- **Usuário base:** `admin@unifei.edu.br`, senha `12345678` (o RF14 mantém o mínimo de 8 caracteres).
+
+### Impacto no DRE (atualizar para a versão 1.1 e refletir na MRB)
+
+| Requisito | Antes (DRE v1.0) | Agora |
+| --- | --- | --- |
+| RF01–RF08 | Ator: Estudante | Ator: Administrador (único usuário) |
+| RF14 | Estudante se cadastra | Não há cadastro: o administrador apenas edita os próprios dados (nome, e-mail e senha) |
+| RF15 | — | Inalterado: login/logout; nenhuma tela acessível sem sessão |
+| RNF10 | Isolamento dos dados por usuário | Não se aplica: há um único usuário |
+
+### Regras de negócio implementadas
+
+| Regra | Onde |
+| --- | --- |
+| Código de disciplina único por semestre | API `/disciplinas` |
+| Nota só para atividade **concluída**, uma por atividade; nota 0–10, peso > 0 | API `/avaliacoes` |
+| Atividade com nota não pode ser reaberta (exclua a nota antes) | API `PATCH /atividades/:id/status` |
+| Média ponderada por disciplina: Σ(nota × peso) / Σ peso | API `/avaliacoes/desempenho` |
+| E-mail válido e senha ≥ 8 caracteres; senha em branco na edição mantém a atual | API `PUT /usuarios/:id` |
+| Toda rota, exceto login e health, exige sessão válida (401) | Middleware `autenticar` |
+
+### API da Release 02
+
+| Método | Rota | Acesso |
+| --- | --- | --- |
+| POST | `/auth/login`, `/auth/logout` | público |
+| GET | `/auth/sessao`, `/resumo` | autenticado |
+| GET, GET/PUT `/:id` | `/usuarios` | autenticado (sem POST/DELETE) |
+| GET/POST, GET/PUT/DELETE `/:id`, GET `/desempenho` | `/avaliacoes` | autenticado |
+| GET/POST/PUT/PATCH/DELETE | `/disciplinas`, `/atividades` | autenticado |
+
+### Testes Selenium (33, todos passando)
+
+| Arquivo | Casos |
+| --- | --- |
+| `auth.test.mjs` | CT-15 (rota protegida, senha errada, login, logout, API recusa requisição sem sessão) |
+| `usuarios.test.mjs` | CT-14 (só o admin na lista, sem cadastrar/excluir; validações; edição mantendo a senha; troca de senha exigida no login) |
+| `avaliacoes.test.mjs` | CT-08 (só concluídas sem nota, validações, média ponderada, edição, bloqueio de reabertura, exclusão) |
+| `disciplinas.test.mjs`, `atividades.test.mjs`, `smoke.test.mjs` | CT-01 a CT-07 e fumaça, autenticados como admin |
+
+Pendências da equipe: atualizar DRE (v1.1), MRB e CRO com as mudanças acima.

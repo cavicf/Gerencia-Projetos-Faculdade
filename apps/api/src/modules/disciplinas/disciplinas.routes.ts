@@ -11,23 +11,23 @@ import {
 
 export const disciplinasRoutes = Router();
 
-disciplinasRoutes.get("/", async (req, res) => {
-  res.json(await listarDisciplinas(req.usuarioId));
+disciplinasRoutes.get("/", async (_req, res) => {
+  res.json(await listarDisciplinas());
 });
 
 disciplinasRoutes.get("/:id", async (req, res) => {
-  res.json(await obterDisciplina(req.usuarioId, req.params.id));
+  res.json(await obterDisciplina(req.params.id));
 });
 
 disciplinasRoutes.post("/", async (req, res) => {
-  res.status(201).json(await criarDisciplina(req.usuarioId, validar(disciplinaSchema, req.body)));
+  res.status(201).json(await criarDisciplina(validar(disciplinaSchema, req.body)));
 });
 
 disciplinasRoutes.put("/:id", async (req, res) => {
-  res.json(await atualizarDisciplina(req.usuarioId, req.params.id, validar(disciplinaSchema, req.body)));
+  res.json(await atualizarDisciplina(req.params.id, validar(disciplinaSchema, req.body)));
 });
 
 disciplinasRoutes.delete("/:id", async (req, res) => {
-  await excluirDisciplina(req.usuarioId, req.params.id);
+  await excluirDisciplina(req.params.id);
   res.status(204).end();
 });

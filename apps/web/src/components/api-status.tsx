@@ -1,6 +1,6 @@
 import type { ResumoUsuario, SaudeApi } from "@acadflow/shared";
-import { connection } from "next/server";
-import { api } from "@/lib/api";
+import { unstable_rethrow } from "next/navigation";
+import { apiServidor } from "@/lib/api-servidor";
 
 const ROTULOS: Record<keyof ResumoUsuario, string> = {
   disciplinas: "Disciplinas",
@@ -8,16 +8,15 @@ const ROTULOS: Record<keyof ResumoUsuario, string> = {
   avaliacoes: "Avaliações",
 };
 
-/** Verifica se a API está no ar e mostra os totais do estudante atual. */
+/** Verifica se a API está no ar e mostra os totais cadastrados. */
 export async function ApiStatus() {
-  await connection();
-
   let saude: SaudeApi | null = null;
   let resumo: ResumoUsuario | null = null;
   try {
-    [saude, resumo] = await Promise.all([api<SaudeApi>("/health"), api<ResumoUsuario>("/resumo")]);
-  } catch {
-    // Exibido abaixo como "indisponível".
+    [saude, resumo] = await Promise.all([apiServidor<SaudeApi>("/health"), apiServidor<ResumoUsuario>("/resumo")]);
+  } catch (erro) {
+    // `redirect()` para o login também chega aqui como exceção e precisa seguir adiante.
+    unstable_rethrow(erro);
   }
 
   if (!saude || !resumo) {
@@ -28,11 +27,12 @@ export async function ApiStatus() {
     );
   }
 
+  const chaves = Object.keys(ROTULOS) as (keyof ResumoUsuario)[];
   return (
     <div data-testid="api-status" data-status="online" className="text-sm text-slate-700">
       <p className="font-medium text-emerald-700">API online (v{saude.versao})</p>
-      <ul className="mt-2 grid grid-cols-3 gap-2">
-        {(Object.keys(ROTULOS) as (keyof ResumoUsuario)[]).map((chave) => (
+      <ul className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-4">
+        {chaves.map((chave) => (
           <li key={chave} data-testid={`resumo-${chave}`} className="rounded-md bg-slate-50 px-3 py-2">
             <span className="block text-xs uppercase text-slate-500">{ROTULOS[chave]}</span>
             <span data-testid="resumo-total" className="text-lg font-semibold">

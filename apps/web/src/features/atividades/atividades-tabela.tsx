@@ -1,10 +1,9 @@
 import { ROTULOS_PRIORIDADE, ROTULOS_TIPO, type AtividadeDetalhada, type Prioridade } from "@acadflow/shared";
 import Link from "next/link";
-import { connection } from "next/server";
 import { BotaoExcluir } from "@/components/ui/botao-excluir";
 import { EstadoVazio } from "@/components/ui/estado-vazio";
 import { linkAcao } from "@/components/ui/estilos";
-import { api } from "@/lib/api";
+import { apiServidor } from "@/lib/api-servidor";
 import { formatarData } from "@/lib/formatar";
 import { DataConclusao } from "./data-conclusao";
 import { StatusSelect } from "./status-select";
@@ -15,10 +14,9 @@ const COR_PRIORIDADE: Record<Prioridade, string> = {
   baixa: "bg-slate-100 text-slate-700",
 };
 
-/** Atividades do estudante em ordem de entrega, com status, prioridade e ações (RF04–RF07). */
+/** Atividades em ordem de entrega, com status, prioridade e ações (RF04–RF07). */
 export async function AtividadesTabela() {
-  await connection();
-  const atividades = await api<AtividadeDetalhada[]>("/atividades");
+  const atividades = await apiServidor<AtividadeDetalhada[]>("/atividades");
 
   if (atividades.length === 0) {
     return (
@@ -76,7 +74,9 @@ export async function AtividadesTabela() {
                   <BotaoExcluir
                     caminho={`/atividades/${a.id}`}
                     titulo={`Excluir "${a.titulo}"?`}
-                    mensagem={<p>A atividade e a nota registrada para ela serão removidas. Esta ação não pode ser desfeita.</p>}
+                    mensagem={
+                      <p>A atividade e a nota registrada para ela serão removidas. Esta ação não pode ser desfeita.</p>
+                    }
                   />
                 </div>
               </td>

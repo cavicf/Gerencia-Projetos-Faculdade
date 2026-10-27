@@ -1,7 +1,6 @@
 [
   {
     "id": "32277509-904e-4003-b130-525ec9388b4e",
-    "usuarioId": "bc231e53-7352-4ca2-a676-852d4bd09f35",
     "atividadeId": "e27004e3-c481-49f2-8732-fb2e27e1a864",
     "peso": 2,
     "nota": 9.5,
@@ -10,7 +9,6 @@
   },
   {
     "id": "832ff1c2-c858-4d3b-aeda-7b83b8a11457",
-    "usuarioId": "bc231e53-7352-4ca2-a676-852d4bd09f35",
     "atividadeId": "1fb4f68c-ac45-4ba1-9a69-2f0066e83bda",
     "peso": 3,
     "nota": 7.0,

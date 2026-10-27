@@ -3,13 +3,24 @@
 import assert from "node:assert/strict";
 import { after, before, describe, it } from "node:test";
 import { By } from "selenium-webdriver";
-import { abrir, aguardarUrl, clicar, criarDriver, porTestId, seletorTestId, textoEm } from "../support/driver.mjs";
+import { ADMIN } from "../support/api.mjs";
+import {
+  abrir,
+  aguardarUrl,
+  clicar,
+  criarDriver,
+  entrar,
+  porTestId,
+  seletorTestId,
+  textoEm,
+} from "../support/driver.mjs";
 
 describe("Smoke – aplicação no ar", () => {
   let driver;
 
   before(async () => {
     driver = await criarDriver();
+    await entrar(driver, ADMIN);
   });
 
   after(async () => {
@@ -24,7 +35,7 @@ describe("Smoke – aplicação no ar", () => {
     assert.equal(await status.getAttribute("data-status"), "online");
   });
 
-  it("mostra na tela inicial apenas os totais do estudante atual (RNF10)", async () => {
+  it("mostra na tela inicial os mesmos totais das listagens", async () => {
     const contarLinhas = async (caminho, testId) => {
       await abrir(driver, caminho);
       await porTestId(driver, testId);
@@ -39,6 +50,7 @@ describe("Smoke – aplicação no ar", () => {
 
     assert.equal(await total("disciplinas"), String(await contarLinhas("/disciplinas", "disciplina-linha")));
     assert.equal(await total("atividades"), String(await contarLinhas("/atividades", "atividade-linha")));
+    assert.equal(await total("avaliacoes"), String(await contarLinhas("/avaliacoes", "avaliacao-linha")));
   });
 
   it("navega até o módulo de Disciplinas pelo menu", async () => {

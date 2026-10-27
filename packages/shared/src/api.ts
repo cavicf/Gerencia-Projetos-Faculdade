@@ -14,7 +14,7 @@ export interface SaudeApi {
   versao: string;
 }
 
-/** Totais do estudante autenticado exibidos na tela inicial. */
+/** Totais exibidos na tela inicial (base do RF13). */
 export interface ResumoUsuario {
   disciplinas: number;
   atividades: number;

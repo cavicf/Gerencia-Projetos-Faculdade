@@ -2,7 +2,14 @@
 import assert from "node:assert/strict";
 import { after, before, describe, it } from "node:test";
 import { By, Select } from "selenium-webdriver";
-import { criarAtividade, criarDisciplina, limparDisciplinas, obterAtividade, SUFIXO } from "../support/api.mjs";
+import {
+  ADMIN,
+  criarAtividade,
+  criarDisciplina,
+  excluirDisciplinas,
+  obterAtividade,
+  SUFIXO,
+} from "../support/api.mjs";
 import {
   abrir,
   aguardar,
@@ -10,6 +17,7 @@ import {
   aguardarUrl,
   clicar,
   criarDriver,
+  entrar,
   porTestId,
   preencher,
   preencherData,
@@ -33,14 +41,15 @@ describe("Manter Atividades Acadêmicas", () => {
   let disciplinaB;
 
   before(async () => {
-    driver = await criarDriver();
     disciplinaA = await criarDisciplina({ codigo: `${PREFIXO}A`, nome: "Disciplina A" });
     disciplinaB = await criarDisciplina({ codigo: `${PREFIXO}B`, nome: "Disciplina B" });
+    driver = await criarDriver();
+    await entrar(driver, ADMIN);
   });
 
   after(async () => {
     await driver?.quit();
-    await limparDisciplinas(PREFIXO);
+    await excluirDisciplinas(PREFIXO); // remove em cascata as atividades criadas
   });
 
   describe("CT-04: cadastro com validação de campos obrigatórios", () => {

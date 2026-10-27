@@ -1,15 +1,13 @@
 import type { DisciplinaResumo } from "@acadflow/shared";
 import Link from "next/link";
-import { connection } from "next/server";
 import { BotaoExcluir } from "@/components/ui/botao-excluir";
 import { EstadoVazio } from "@/components/ui/estado-vazio";
 import { linkAcao } from "@/components/ui/estilos";
-import { api } from "@/lib/api";
+import { apiServidor } from "@/lib/api-servidor";
 
 /** RF02 – lista de disciplinas com a contagem de atividades pendentes e concluídas. */
 export async function DisciplinasTabela() {
-  await connection();
-  const disciplinas = await api<DisciplinaResumo[]>("/disciplinas");
+  const disciplinas = await apiServidor<DisciplinaResumo[]>("/disciplinas");
 
   if (disciplinas.length === 0) {
     return (
@@ -68,8 +66,8 @@ export async function DisciplinasTabela() {
                             <strong>
                               {total} atividade{total > 1 ? "s" : ""} vinculada{total > 1 ? "s" : ""}
                             </strong>{" "}
-                            a esta disciplina também {total > 1 ? "serão removidas" : "será removida"}, junto com notas
-                            e pesos registrados. Esta ação não pode ser desfeita.
+                            a esta disciplina também {total > 1 ? "serão removidas" : "será removida"}, junto com
+                            notas e pesos registrados. Esta ação não pode ser desfeita.
                           </p>
                         ) : (
                           <p>

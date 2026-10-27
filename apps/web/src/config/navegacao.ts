@@ -9,4 +9,5 @@ export const NAVEGACAO: ItemNavegacao[] = [
   { href: "/disciplinas", rotulo: "Disciplinas" },
   { href: "/atividades", rotulo: "Atividades" },
   { href: "/avaliacoes", rotulo: "Avaliações" },
+  { href: "/usuarios", rotulo: "Usuários" },
 ];

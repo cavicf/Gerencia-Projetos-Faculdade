@@ -1,7 +1,15 @@
 // Release 01 – Manter Disciplinas (RF01–RF03): casos de teste CT-01, CT-02 e CT-03 da MRB.
 import assert from "node:assert/strict";
 import { after, before, describe, it } from "node:test";
-import { alterarStatus, criarAtividade, criarDisciplina, limparDisciplinas, listarAtividades, SUFIXO } from "../support/api.mjs";
+import {
+  ADMIN,
+  alterarStatus,
+  criarAtividade,
+  criarDisciplina,
+  excluirDisciplinas,
+  listarAtividades,
+  SUFIXO,
+} from "../support/api.mjs";
 import {
   abrir,
   aguardar,
@@ -9,6 +17,7 @@ import {
   aguardarUrl,
   clicar,
   criarDriver,
+  entrar,
   porTestId,
   preencher,
   textoEm,
@@ -34,11 +43,12 @@ describe("Manter Disciplinas", () => {
 
   before(async () => {
     driver = await criarDriver();
+    await entrar(driver, ADMIN);
   });
 
   after(async () => {
     await driver?.quit();
-    await limparDisciplinas(PREFIXO);
+    await excluirDisciplinas(PREFIXO); // remove em cascata as atividades criadas
   });
 
   describe("CT-01: cadastro e validação de código único por semestre", () => {

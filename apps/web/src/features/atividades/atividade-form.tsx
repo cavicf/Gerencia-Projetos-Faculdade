@@ -8,7 +8,7 @@ import {
   TIPOS_ATIVIDADE,
   type Atividade,
   type AtividadeEntrada,
-  type Disciplina,
+  type DisciplinaResumo,
 } from "@acadflow/shared";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -19,7 +19,7 @@ import { botaoPrimario, botaoSecundario, campo } from "@/components/ui/estilos";
 import { api, ApiError } from "@/lib/api";
 
 interface AtividadeFormProps {
-  disciplinas: Pick<Disciplina, "id" | "codigo" | "nome" | "semestre">[];
+  disciplinas: Pick<DisciplinaResumo, "id" | "codigo" | "nome" | "semestre">[];
   /** Atividade em edição (RF07); ausente no cadastro (RF04). */
   atividade?: Atividade;
 }

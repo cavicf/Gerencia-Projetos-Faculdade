@@ -14,12 +14,7 @@ interface Registro {
   atualizadoEm: DataHoraISO;
 }
 
-/** Registro pertencente a um estudante (RNF10 – isolamento por usuário). */
-interface RegistroDoUsuario extends Registro {
-  usuarioId: string;
-}
-
-/** RF14 / RF15 – Módulo 1: Controle de Acesso. */
+/** RF14 / RF15 – Módulo 1: Controle de Acesso. Há um único usuário, o administrador, com acesso a tudo. */
 export interface Usuario extends Registro {
   nome: string;
   email: string;
@@ -29,9 +24,24 @@ export interface Usuario extends Registro {
 
 export type UsuarioPublico = Omit<Usuario, "senhaHash">;
 
+/** Corpo de PUT `/usuarios/:id`. Senha vazia mantém a atual. */
+export type UsuarioEntrada = Pick<Usuario, "nome" | "email"> & { senha: string };
+
+/** Corpo de POST `/auth/login`. */
+export interface Credenciais {
+  email: string;
+  senha: string;
+}
+
+/** Sessão aberta no login (RF15); o `id` é o token guardado no cookie. */
+export interface Sessao extends Registro {
+  usuarioId: string;
+  expiraEm: DataHoraISO;
+}
+
 /** RF01–RF03 – Módulo 2: Gestão de Disciplinas. */
-export interface Disciplina extends RegistroDoUsuario {
-  /** Único por estudante e semestre (RF01). */
+export interface Disciplina extends Registro {
+  /** Único por semestre (RF01). */
   codigo: string;
   nome: string;
   professor: string;
@@ -45,8 +55,11 @@ export interface DisciplinaResumo extends Disciplina {
   atividadesConcluidas: number;
 }
 
+/** Corpo de POST/PUT `/disciplinas`. */
+export type DisciplinaEntrada = Pick<Disciplina, "codigo" | "nome" | "professor" | "semestre">;
+
 /** RF04–RF07 – Módulo 3: Gestão de Atividades. */
-export interface Atividade extends RegistroDoUsuario {
+export interface Atividade extends Registro {
   disciplinaId: string;
   titulo: string;
   descricao: string;
@@ -62,18 +75,37 @@ export interface Atividade extends RegistroDoUsuario {
 export interface AtividadeDetalhada extends Atividade {
   disciplinaCodigo: string;
   disciplinaNome: string;
+  /** Indica se já há nota registrada (RF08). */
+  avaliada: boolean;
 }
-
-/** Corpo de POST/PUT `/disciplinas`. */
-export type DisciplinaEntrada = Pick<Disciplina, "codigo" | "nome" | "professor" | "semestre">;
 
 /** Corpo de POST/PUT `/atividades`. `tipo`, `descricao` e `prioridade` são opcionais (RF04/RF06). */
 export type AtividadeEntrada = Pick<Atividade, "titulo" | "dataEntrega" | "disciplinaId"> &
   Partial<Pick<Atividade, "descricao" | "tipo" | "prioridade">>;
 
-/** RF08 – nota e peso de uma atividade concluída (CRUD "Manter Avaliações", Release 02). */
-export interface Avaliacao extends RegistroDoUsuario {
+/** RF08 – nota e peso de uma atividade concluída. */
+export interface Avaliacao extends Registro {
   atividadeId: string;
   peso: number;
   nota: number;
+}
+
+export interface AvaliacaoDetalhada extends Avaliacao {
+  atividadeTitulo: string;
+  disciplinaId: string;
+  disciplinaCodigo: string;
+  disciplinaNome: string;
+}
+
+/** Corpo de POST `/avaliacoes`. Em PUT a atividade não muda. */
+export type AvaliacaoEntrada = Pick<Avaliacao, "atividadeId" | "peso" | "nota">;
+
+/** RF08 – desempenho em uma disciplina: média ponderada das notas. */
+export interface DesempenhoDisciplina {
+  disciplinaId: string;
+  disciplinaCodigo: string;
+  disciplinaNome: string;
+  avaliacoes: number;
+  somaPesos: number;
+  mediaPonderada: number;
 }

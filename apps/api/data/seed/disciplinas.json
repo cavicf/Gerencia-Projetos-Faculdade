@@ -1,7 +1,6 @@
 [
   {
     "id": "e72728d9-7c89-4bcb-be38-d4d5910d9f4d",
-    "usuarioId": "bc231e53-7352-4ca2-a676-852d4bd09f35",
     "codigo": "SDES06",
     "nome": "Gerência de Projetos de Software",
     "professor": "Prof. Responsável SDES06",
@@ -11,7 +10,6 @@
   },
   {
     "id": "947197de-8c57-43fe-9644-8a817293364d",
-    "usuarioId": "bc231e53-7352-4ca2-a676-852d4bd09f35",
     "codigo": "CCO016",
     "nome": "Engenharia de Software",
     "professor": "Prof. Responsável CCO016",
@@ -21,20 +19,9 @@
   },
   {
     "id": "e6160edf-f16f-4bac-b3fc-eeab8ef1d75a",
-    "usuarioId": "bc231e53-7352-4ca2-a676-852d4bd09f35",
     "codigo": "MAT001",
     "nome": "Cálculo I",
     "professor": "Prof. Responsável MAT001",
-    "semestre": "2026.2",
-    "criadoEm": "2026-10-01T12:00:00.000Z",
-    "atualizadoEm": "2026-10-01T12:00:00.000Z"
-  },
-  {
-    "id": "d9143381-2f05-467c-bda4-fd371b64f953",
-    "usuarioId": "f699d4fd-d2d9-4cad-90b9-28b461117a80",
-    "codigo": "SDES06",
-    "nome": "Gerência de Projetos de Software",
-    "professor": "Prof. Responsável SDES06",
     "semestre": "2026.2",
     "criadoEm": "2026-10-01T12:00:00.000Z",
     "atualizadoEm": "2026-10-01T12:00:00.000Z"

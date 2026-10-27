@@ -8,7 +8,7 @@ const obrigatorio = (rotulo: string, max: number) =>
     .min(1, `Informe ${rotulo}.`)
     .max(max, `Use no máximo ${max} caracteres.`);
 
-/** RF01 – código, nome, professor responsável e semestre letivo. */
+/** RF01 / RF03 – código, nome, professor responsável e semestre letivo. */
 export const disciplinaSchema = z.object({
   codigo: obrigatorio("o código", 20).transform((codigo) => codigo.toUpperCase()),
   nome: obrigatorio("o nome", 120),

@@ -8,6 +8,9 @@ export const PRIORIDADE_PADRAO = "media" satisfies (typeof PRIORIDADES)[number];
 export const STATUS_INICIAL = "pendente" satisfies (typeof STATUS_ATIVIDADE)[number];
 export const SENHA_TAMANHO_MINIMO = 8; // RF14
 export const DIAS_PROXIMOS_PRAZOS = 7; // RF09
+export const NOTA_MAXIMA = 10; // RF08
+export const COOKIE_SESSAO = "acadflow_sessao"; // RF15
+export const DURACAO_SESSAO_HORAS = 8;
 
 export const ROTULOS_TIPO: Record<(typeof TIPOS_ATIVIDADE)[number], string> = {
   prova: "Prova",

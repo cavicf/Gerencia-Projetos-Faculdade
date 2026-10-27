@@ -1,7 +1,6 @@
 [
   {
     "id": "e27004e3-c481-49f2-8732-fb2e27e1a864",
-    "usuarioId": "bc231e53-7352-4ca2-a676-852d4bd09f35",
     "disciplinaId": "e72728d9-7c89-4bcb-be38-d4d5910d9f4d",
     "titulo": "Entrega Release 00",
     "descricao": "DRE, EST, CRO e MRB versionados na branch de análise.",
@@ -15,7 +14,6 @@
   },
   {
     "id": "f0a10a90-ef9e-45f8-8294-f4ba6011e2cf",
-    "usuarioId": "bc231e53-7352-4ca2-a676-852d4bd09f35",
     "disciplinaId": "e72728d9-7c89-4bcb-be38-d4d5910d9f4d",
     "titulo": "Entrega Release 01",
     "descricao": "CRUDs de Disciplinas e Atividades com testes Selenium.",
@@ -29,7 +27,6 @@
   },
   {
     "id": "5ccaed3b-c776-4d8a-a4dd-18dd2c39ee05",
-    "usuarioId": "bc231e53-7352-4ca2-a676-852d4bd09f35",
     "disciplinaId": "e72728d9-7c89-4bcb-be38-d4d5910d9f4d",
     "titulo": "Entrega Release 02",
     "descricao": "CRUDs de Avaliações e Usuários com testes Selenium.",
@@ -43,7 +40,6 @@
   },
   {
     "id": "7a82d75c-a9ad-4c22-a643-bde0842a151e",
-    "usuarioId": "bc231e53-7352-4ca2-a676-852d4bd09f35",
     "disciplinaId": "947197de-8c57-43fe-9644-8a817293364d",
     "titulo": "Prova 1",
     "descricao": "Conteúdo: processos de software e requisitos.",
@@ -57,7 +53,6 @@
   },
   {
     "id": "6b043ad9-d9c2-49b6-bf4b-4c4a86cb8d2e",
-    "usuarioId": "bc231e53-7352-4ca2-a676-852d4bd09f35",
     "disciplinaId": "947197de-8c57-43fe-9644-8a817293364d",
     "titulo": "Lista de exercícios – UML",
     "descricao": "Diagramas de caso de uso e de classes.",
@@ -71,7 +66,6 @@
   },
   {
     "id": "1fb4f68c-ac45-4ba1-9a69-2f0066e83bda",
-    "usuarioId": "bc231e53-7352-4ca2-a676-852d4bd09f35",
     "disciplinaId": "e6160edf-f16f-4bac-b3fc-eeab8ef1d75a",
     "titulo": "Prova 1",
     "descricao": "Limites e derivadas.",
@@ -85,7 +79,6 @@
   },
   {
     "id": "e8bbd07f-da5b-4bc5-9d97-74f2d55e73b9",
-    "usuarioId": "bc231e53-7352-4ca2-a676-852d4bd09f35",
     "disciplinaId": "e6160edf-f16f-4bac-b3fc-eeab8ef1d75a",
     "titulo": "Lista 3 – Integrais",
     "descricao": "",
@@ -93,20 +86,6 @@
     "dataEntrega": "2026-10-20",
     "status": "pendente",
     "prioridade": "media",
-    "dataConclusao": null,
-    "criadoEm": "2026-10-01T12:00:00.000Z",
-    "atualizadoEm": "2026-10-01T12:00:00.000Z"
-  },
-  {
-    "id": "980eda96-d076-403b-96c5-1304a5ed6274",
-    "usuarioId": "f699d4fd-d2d9-4cad-90b9-28b461117a80",
-    "disciplinaId": "d9143381-2f05-467c-bda4-fd371b64f953",
-    "titulo": "Entrega Release 01",
-    "descricao": "Registro de outro estudante (não deve aparecer para o usuário de teste – RNF10).",
-    "tipo": "trabalho",
-    "dataEntrega": "2026-10-22",
-    "status": "pendente",
-    "prioridade": "alta",
     "dataConclusao": null,
     "criadoEm": "2026-10-01T12:00:00.000Z",
     "atualizadoEm": "2026-10-01T12:00:00.000Z"

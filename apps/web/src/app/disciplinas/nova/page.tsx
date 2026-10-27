@@ -1,11 +1,15 @@
+import { Suspense } from "react";
+import { Carregando } from "@/components/ui/estado-vazio";
 import { PageHeader } from "@/components/ui/page-header";
-import { DisciplinaForm } from "@/features/disciplinas/disciplina-form";
+import { DisciplinaFormCarregado } from "@/features/disciplinas/disciplina-form-carregado";
 
 export default function NovaDisciplinaPage() {
   return (
     <>
       <PageHeader titulo="Nova disciplina" />
-      <DisciplinaForm />
+      <Suspense fallback={<Carregando />}>
+        <DisciplinaFormCarregado />
+      </Suspense>
     </>
   );
 }

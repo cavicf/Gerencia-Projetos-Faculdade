@@ -91,39 +91,100 @@ A análise das Releases 01 e 02 (escopo, regras de negócio, API, telas, testes 
 
 ## Como executar
 
-Pré-requisitos: **Node.js 20+** e **Google Chrome** (para os testes Selenium).
+### Pré-requisitos
+
+- **Node.js 20 ou superior** (com npm) — confira com `node -v`.
+- **Google Chrome** instalado — usado pelos testes Selenium. O driver do Chrome é baixado automaticamente pelo Selenium na primeira execução.
+- Portas **3000** (front-end) e **3333** (API) livres.
+
+### Passo a passo
+
+1. Clone o repositório e entre na pasta:
+
+   ```bash
+   git clone https://github.com/cavicf/Gerencia-Projetos-Faculdade.git
+   cd Gerencia-Projetos-Faculdade
+   ```
+
+2. Instale as dependências de todos os pacotes (front-end, API, tipos compartilhados e testes):
+
+   ```bash
+   npm install
+   ```
+
+3. Crie os dados iniciais. O comando copia os dados mockados de `apps/api/data/seed/` para `apps/api/data/db/`, de onde a API lê e grava:
+
+   ```bash
+   npm run seed
+   ```
+
+4. Suba a API e o front-end juntos:
+
+   ```bash
+   npm run dev
+   ```
+
+   - Front-end: <http://localhost:3000>
+   - API: <http://localhost:3333/api/health>
+
+5. Acesse <http://localhost:3000> e entre com o usuário administrador:
+
+   | E-mail | Senha |
+   | --- | --- |
+   | `admin@unifei.edu.br` | `12345678` |
+
+   O administrador é o único usuário do sistema e tem acesso a todos os cadastros. Na tela **Usuários** é possível apenas editá-lo (nome, e-mail e senha); não há cadastro nem exclusão de usuários. Todas as telas, exceto `/login`, exigem login.
+
+Para voltar ao estado inicial dos dados a qualquer momento, rode `npm run seed` novamente (com ou sem a aplicação rodando).
+
+### Testes automatizados (Selenium)
+
+Os testes usam a aplicação real, então **a API e o front-end precisam estar rodando** (passo 4) em outro terminal. Recomenda-se rodar `npm run seed` antes, para partir dos dados iniciais. Cada teste cria e remove os próprios dados e, ao final, o administrador volta à senha `12345678`.
+
+**Modo headless** (sem abrir janela, mais rápido — ideal para conferir tudo de uma vez):
 
 ```bash
-npm install          # instala as dependências de todos os pacotes
-npm run seed         # cria apps/api/data/db a partir dos dados mockados
-npm run dev          # sobe a API (http://localhost:3333) e o front (http://localhost:3000)
+npm run test:e2e
 ```
 
-Outros comandos:
+**Modo navegador** (abre o Chrome e pausa entre as ações, para acompanhar os testes na tela):
+
+```bash
+npm run test:e2e:navegador
+```
+
+A velocidade do modo navegador é configurada em `tests/selenium/navegador.env` (`PAUSA_MS`, em milissegundos). Ao final, os dois modos mostram o total de testes aprovados (`ℹ pass`) e reprovados (`ℹ fail`).
+
+Se o front-end ou a API estiverem em outras portas, informe as URLs:
+
+```bash
+WEB_URL=http://localhost:3010 API_URL=http://localhost:3333 npm run test:e2e
+```
+
+| Arquivo (`tests/selenium/specs/`) | Casos de teste |
+| --- | --- |
+| `smoke.test.mjs` | Aplicação no ar, totais da tela inicial e navegação |
+| `disciplinas.test.mjs` | CT-01 a CT-03 — Manter Disciplinas |
+| `atividades.test.mjs` | CT-04 a CT-07 — Manter Atividades |
+| `avaliacoes.test.mjs` | CT-08 — Manter Avaliações |
+| `usuarios.test.mjs` | CT-14 — Edição do usuário administrador |
+| `auth.test.mjs` | CT-15 — Login, logout e rotas protegidas |
+
+### Outros comandos
 
 | Comando | Descrição |
 | --- | --- |
 | `npm run dev:api` / `npm run dev:web` | Sobe apenas a API ou apenas o front-end |
+| `npm run seed` | Restaura os dados iniciais |
 | `npm run typecheck` | Verifica os tipos de todos os pacotes |
 | `npm run lint` | ESLint do front-end |
 | `npm run build` | Build de produção do front-end |
-| `npm run test:e2e` | Testes Selenium em modo headless (com a aplicação rodando; use `WEB_URL` se o front não estiver na porta 3000) |
-| `npm run test:e2e:navegador` | Os mesmos testes com o Chrome visível e uma pausa entre as ações para acompanhar na tela (ajuste em `tests/selenium/navegador.env`) |
 
 As variáveis de ambiente opcionais estão em `apps/api/.env.example` e `apps/web/.env.example`.
 
 ### Dados mockados
 
-Os dados ficam em arquivos JSON: `apps/api/data/seed/` (versionados) é copiado para `apps/api/data/db/` (ignorado pelo Git), que é onde a API lê e grava. `npm run seed` restaura o estado inicial a qualquer momento.
-
-Usuários de teste (senhas armazenadas apenas como hash bcrypt):
-
-| E-mail | Senha |
-| --- | --- |
-| `estudante@acadflow.dev` | `acadflow123` |
-| `outro@acadflow.dev` | `outrasenha123` |
-
-Até a Release 02 (autenticação), todas as requisições são atribuídas a `estudante@acadflow.dev`.
+Não há banco de dados nesta fase: os dados ficam em arquivos JSON. `apps/api/data/seed/` é versionado e `apps/api/data/db/` (ignorado pelo Git) é a cópia usada pela API. A senha do usuário é guardada apenas como hash bcrypt.
 
 ## Controle de versão e baselines
 
@@ -168,8 +229,8 @@ Os CRUDs implementados devem ser validados com **Selenium**, cobrindo, conforme 
 | Release | Status |
 | --- | --- |
 | 00 | Concluída |
-| 01 | Pendente |
-| 02 | Pendente |
+| 01 | Concluída |
+| 02 | Concluída |
 | 03 | Pendente |
 | 04 | Pendente |
 

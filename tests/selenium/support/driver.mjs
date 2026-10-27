@@ -115,6 +115,22 @@ export async function valorSelecionado(driver, id) {
   return (await aguardar(driver, `#${id}`)).getAttribute("value");
 }
 
+/** RF15 – entra pela tela de login e aguarda o menu do usuário. */
+export async function entrar(driver, { email, senha }) {
+  await sair(driver);
+  await abrir(driver, "/login");
+  await preencher(driver, "email", email);
+  await preencher(driver, "senha", senha);
+  await clicar(driver, "botao-entrar");
+  await porTestId(driver, "usuario-logado");
+}
+
+/** Descarta a sessão do navegador (sem passar pela tela). */
+export async function sair(driver) {
+  await abrir(driver, "/login");
+  await driver.manage().deleteAllCookies();
+}
+
 /** Texto de um `data-testid` dentro de outro elemento. */
 export async function textoEm(elemento, testId) {
   return (await elemento.findElement(By.css(seletorTestId(testId)))).getText();
