@@ -123,7 +123,8 @@ describe("Manter Atividades Acadêmicas", () => {
       const titulo = `Tarefa padrao ${SUFIXO}`;
       await abrir(driver, "/atividades/nova");
       await porTestId(driver, "atividade-form");
-      assert.equal(await valorSelecionado(driver, "prioridade"), "media");
+      // Prioridade em botões (Guia de Design): a opção marcada é um radio visualmente oculto.
+      assert.ok(await driver.findElement(By.css("#prioridade-media")).isSelected());
 
       await preencher(driver, "titulo", titulo);
       await selecionar(driver, "disciplinaId", disciplinaA.id);
@@ -141,7 +142,7 @@ describe("Manter Atividades Acadêmicas", () => {
       await preencher(driver, "titulo", titulo);
       await selecionar(driver, "disciplinaId", disciplinaA.id);
       await preencherData(driver, "dataEntrega", "2026-11-22");
-      await selecionar(driver, "prioridade", "alta");
+      await clicar(driver, "prioridade-alta");
       await clicar(driver, "botao-salvar");
 
       await aguardarUrl(driver, /\/atividades$/);

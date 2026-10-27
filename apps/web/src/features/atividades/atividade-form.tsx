@@ -15,7 +15,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { AlertaErro } from "@/components/ui/alerta-erro";
 import { CampoForm } from "@/components/ui/campo-form";
-import { botaoPrimario, botaoSecundario, campo } from "@/components/ui/estilos";
+import { botaoPrimario, botaoSecundario, campo, cartao } from "@/components/ui/estilos";
 import { api, ApiError } from "@/lib/api";
 
 interface AtividadeFormProps {
@@ -71,7 +71,7 @@ export function AtividadeForm({ disciplinas, atividade }: AtividadeFormProps) {
   }
 
   return (
-    <form noValidate onSubmit={salvar} data-testid="atividade-form" className="max-w-2xl space-y-4 rounded-lg border border-slate-200 bg-white p-6">
+    <form noValidate onSubmit={salvar} data-testid="atividade-form" className={`${cartao} max-w-2xl space-y-5 p-6 sm:p-8`}>
       <AlertaErro mensagem={mensagem} />
 
       <CampoForm id="titulo" rotulo="Título" obrigatorio erro={erros.titulo}>
@@ -104,22 +104,46 @@ export function AtividadeForm({ disciplinas, atividade }: AtividadeFormProps) {
           </select>
         </CampoForm>
 
-        <CampoForm id="prioridade" rotulo="Prioridade" erro={erros.prioridade}>
-          <select id="prioridade" name="prioridade" value={dados.prioridade} onChange={alterar("prioridade")} className={campo}>
-            {PRIORIDADES.map((p) => (
-              <option key={p} value={p}>
-                {ROTULOS_PRIORIDADE[p]}
-              </option>
-            ))}
-          </select>
-        </CampoForm>
+        <fieldset className="flex flex-col gap-1.5">
+          <legend className="mb-1.5 text-[13px] font-semibold text-azul">Prioridade</legend>
+          <div className="grid grid-cols-3 gap-2">
+            {PRIORIDADES.map((p) => {
+              const marcada = dados.prioridade === p;
+              return (
+                <label
+                  key={p}
+                  data-testid={`prioridade-${p}`}
+                  className={`cursor-pointer rounded-lg border px-3 py-2.5 text-center text-sm font-semibold transition-colors has-focus-visible:ring-2 has-focus-visible:ring-verde/30 ${
+                    marcada ? "border-verde bg-verde-claro text-verde-escuro" : "border-borda bg-white text-cinza hover:bg-fundo"
+                  }`}
+                >
+                  <input
+                    type="radio"
+                    id={`prioridade-${p}`}
+                    name="prioridade"
+                    value={p}
+                    checked={marcada}
+                    onChange={alterar("prioridade")}
+                    className="sr-only"
+                  />
+                  {ROTULOS_PRIORIDADE[p]}
+                </label>
+              );
+            })}
+          </div>
+          {erros.prioridade && (
+            <p data-testid="erro-prioridade" className="text-xs font-medium text-alerta">
+              {erros.prioridade}
+            </p>
+          )}
+        </fieldset>
       </div>
 
       <CampoForm id="descricao" rotulo="Descrição" erro={erros.descricao}>
         <textarea id="descricao" name="descricao" value={dados.descricao} onChange={alterar("descricao")} rows={3} className={campo} />
       </CampoForm>
 
-      <div className="flex justify-end gap-2 pt-2">
+      <div className="-mx-6 flex justify-end gap-2 border-t border-borda px-6 pt-5 sm:-mx-8 sm:px-8">
         <Link href="/atividades" className={botaoSecundario}>
           Cancelar
         </Link>

@@ -3,7 +3,8 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { api, ApiError } from "@/lib/api";
-import { botaoPerigo, botaoSecundario, linkPerigo } from "./estilos";
+import { botaoIconePerigo, botaoPerigo, botaoSecundario } from "./estilos";
+import { IconeLixeira } from "./icones";
 
 interface BotaoExcluirProps {
   /** Rota da API a ser chamada com DELETE, ex.: `/disciplinas/<id>`. */
@@ -35,25 +36,39 @@ export function BotaoExcluir({ caminho, titulo, mensagem }: BotaoExcluirProps) {
 
   return (
     <>
-      <button type="button" data-testid="botao-excluir" className={linkPerigo} onClick={() => setAberto(true)}>
-        Excluir
+      <button
+        type="button"
+        data-testid="botao-excluir"
+        aria-label="Excluir"
+        title="Excluir"
+        className={botaoIconePerigo}
+        onClick={() => setAberto(true)}
+      >
+        <IconeLixeira />
       </button>
 
       {aberto && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 p-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-azul/40 p-4 backdrop-blur-sm">
           <div
             role="dialog"
             aria-modal="true"
             aria-labelledby="titulo-exclusao"
             data-testid="dialogo-exclusao"
-            className="w-full max-w-md rounded-lg bg-white p-6 shadow-xl"
+            className="w-full max-w-md overflow-hidden rounded-2xl bg-white text-left shadow-2xl"
           >
-            <h2 id="titulo-exclusao" className="text-lg font-semibold text-slate-900">
-              {titulo}
-            </h2>
-            <div className="mt-2 text-sm text-slate-600">{mensagem}</div>
-            {erro && <p className="mt-3 text-sm text-red-700">{erro}</p>}
-            <div className="mt-6 flex justify-end gap-2">
+            <div className="flex gap-4 p-6">
+              <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-alerta-claro text-alerta">
+                <IconeLixeira className="size-5" />
+              </span>
+              <div>
+                <h2 id="titulo-exclusao" className="font-titulo text-lg font-semibold text-azul">
+                  {titulo}
+                </h2>
+                <div className="mt-2 text-sm text-cinza">{mensagem}</div>
+                {erro && <p className="mt-3 text-sm font-medium text-alerta">{erro}</p>}
+              </div>
+            </div>
+            <div className="flex justify-end gap-2 border-t border-borda bg-fundo/60 px-6 py-4">
               <button
                 type="button"
                 data-testid="cancelar-exclusao"

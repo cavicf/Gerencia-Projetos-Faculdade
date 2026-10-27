@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { AlertaErro } from "@/components/ui/alerta-erro";
 import { CampoForm } from "@/components/ui/campo-form";
-import { botaoPrimario, botaoSecundario, campo } from "@/components/ui/estilos";
+import { botaoPrimario, botaoSecundario, campo, cartao } from "@/components/ui/estilos";
 import { api, ApiError } from "@/lib/api";
 
 /** RF14 – alteração do usuário administrador. Senha em branco mantém a atual. */
@@ -45,7 +45,7 @@ export function UsuarioForm({ usuario }: { usuario: UsuarioPublico }) {
   }
 
   return (
-    <form noValidate onSubmit={salvar} data-testid="usuario-form" className="max-w-xl space-y-4 rounded-lg border border-slate-200 bg-white p-6">
+    <form noValidate onSubmit={salvar} data-testid="usuario-form" className={`${cartao} max-w-xl space-y-5 p-6 sm:p-8`}>
       <AlertaErro mensagem={mensagem} />
 
       <CampoForm id="nome" rotulo="Nome" obrigatorio erro={erros.nome}>
@@ -65,7 +65,7 @@ export function UsuarioForm({ usuario }: { usuario: UsuarioPublico }) {
         <input id="senha" name="senha" type="password" value={dados.senha} onChange={alterar("senha")} aria-invalid={!!erros.senha} className={campo} autoComplete="new-password" />
       </CampoForm>
 
-      <div className="flex justify-end gap-2 pt-2">
+      <div className="-mx-6 flex justify-end gap-2 border-t border-borda px-6 pt-5 sm:-mx-8 sm:px-8">
         <Link href="/usuarios" className={botaoSecundario}>
           Cancelar
         </Link>

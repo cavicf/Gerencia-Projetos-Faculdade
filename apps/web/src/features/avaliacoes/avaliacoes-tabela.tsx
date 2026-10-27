@@ -1,9 +1,11 @@
-import type { AvaliacaoDetalhada, DesempenhoDisciplina } from "@acadflow/shared";
+import { NOTA_MAXIMA, type AvaliacaoDetalhada, type DesempenhoDisciplina } from "@acadflow/shared";
 import Link from "next/link";
 import { BotaoExcluir } from "@/components/ui/botao-excluir";
 import { EstadoVazio } from "@/components/ui/estado-vazio";
-import { linkAcao } from "@/components/ui/estilos";
+import { botaoIcone, cartao, linkAcao, tabela } from "@/components/ui/estilos";
+import { IconeLapis } from "@/components/ui/icones";
 import { apiServidor } from "@/lib/api-servidor";
+import { corDaDisciplina } from "@/lib/cores";
 
 const formatarNumero = (valor: number) => valor.toLocaleString("pt-BR", { maximumFractionDigits: 2 });
 
@@ -29,65 +31,90 @@ export async function AvaliacoesTabela() {
   return (
     <div className="space-y-8">
       <section>
-        <h2 className="mb-3 text-sm font-semibold uppercase text-slate-500">Desempenho por disciplina</h2>
-        <div className="overflow-x-auto rounded-lg border border-slate-200 bg-white">
-          <table className="w-full text-left text-sm">
-            <thead className="bg-slate-50 text-xs uppercase text-slate-500">
-              <tr>
-                <th className="px-4 py-3">Disciplina</th>
-                <th className="px-4 py-3 text-center">Avaliações</th>
-                <th className="px-4 py-3 text-center">Soma dos pesos</th>
-                <th className="px-4 py-3 text-center">Média ponderada</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100">
-              {desempenho.map((d) => (
-                <tr key={d.disciplinaId} data-testid="desempenho-linha" data-codigo={d.disciplinaCodigo}>
-                  <td className="px-4 py-3 font-medium text-slate-900">
-                    {d.disciplinaCodigo} – {d.disciplinaNome}
-                  </td>
-                  <td className="px-4 py-3 text-center">{d.avaliacoes}</td>
-                  <td className="px-4 py-3 text-center">{formatarNumero(d.somaPesos)}</td>
-                  <td data-testid="desempenho-media" className="px-4 py-3 text-center font-semibold">
+        <h2 className="mb-3 font-titulo text-lg font-semibold text-azul">Desempenho por disciplina</h2>
+        <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {desempenho.map((d) => {
+            const cor = corDaDisciplina(d.disciplinaId);
+            return (
+              <li
+                key={d.disciplinaId}
+                data-testid="desempenho-linha"
+                data-codigo={d.disciplinaCodigo}
+                className={`${cartao} p-5`}
+              >
+                <p className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wide text-cinza">
+                  <span aria-hidden="true" className="size-2 rounded-full" style={{ backgroundColor: cor }} />
+                  {d.disciplinaCodigo}
+                </p>
+                <p className="mt-1 font-semibold text-azul">{d.disciplinaNome}</p>
+
+                <p className="mt-4">
+                  <span data-testid="desempenho-media" className="font-titulo text-3xl font-bold text-azul">
                     {formatarNumero(d.mediaPonderada)}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+                  </span>
+                  <span className="ml-1 text-xs text-cinza">média ponderada</span>
+                </p>
+                <div aria-hidden="true" className="mt-3 h-1.5 overflow-hidden rounded-full bg-cinza-claro">
+                  <div
+                    className="h-full rounded-full"
+                    style={{ width: `${Math.min(100, (d.mediaPonderada / NOTA_MAXIMA) * 100)}%`, backgroundColor: cor }}
+                  />
+                </div>
+                <p className="mt-3 text-xs text-cinza">
+                  {d.avaliacoes} {d.avaliacoes === 1 ? "avaliação" : "avaliações"} · soma dos pesos{" "}
+                  {formatarNumero(d.somaPesos)}
+                </p>
+              </li>
+            );
+          })}
+        </ul>
       </section>
 
       <section>
-        <h2 className="mb-3 text-sm font-semibold uppercase text-slate-500">Notas registradas</h2>
-        <div className="overflow-x-auto rounded-lg border border-slate-200 bg-white">
-          <table className="w-full text-left text-sm">
-            <thead className="bg-slate-50 text-xs uppercase text-slate-500">
+        <h2 className="mb-3 font-titulo text-lg font-semibold text-azul">Notas registradas</h2>
+        <div className={tabela.contorno}>
+          <table className={tabela.tabela}>
+            <thead className={tabela.cabecalho}>
               <tr>
-                <th className="px-4 py-3">Atividade</th>
+                <th className="px-5 py-3">Atividade</th>
                 <th className="px-4 py-3">Disciplina</th>
                 <th className="px-4 py-3 text-center">Peso</th>
                 <th className="px-4 py-3 text-center">Nota</th>
-                <th className="px-4 py-3 text-right">Ações</th>
+                <th className="px-5 py-3 text-right">Ações</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
+            <tbody className={tabela.corpo}>
               {avaliacoes.map((av) => (
-                <tr key={av.id} data-testid="avaliacao-linha" data-atividade={av.atividadeTitulo}>
-                  <td className="px-4 py-3 font-medium text-slate-900">{av.atividadeTitulo}</td>
-                  <td className="px-4 py-3 text-slate-600">
-                    {av.disciplinaCodigo} – {av.disciplinaNome}
+                <tr key={av.id} data-testid="avaliacao-linha" data-atividade={av.atividadeTitulo} className={tabela.linha}>
+                  <td className="px-5 py-3.5 font-semibold text-azul">{av.atividadeTitulo}</td>
+                  <td className="px-4 py-3.5 text-azul">
+                    <span className="flex items-center gap-2">
+                      <span
+                        aria-hidden="true"
+                        className="size-2 shrink-0 rounded-full"
+                        style={{ backgroundColor: corDaDisciplina(av.disciplinaId) }}
+                      />
+                      <span>
+                        {av.disciplinaCodigo} – {av.disciplinaNome}
+                      </span>
+                    </span>
                   </td>
-                  <td data-testid="avaliacao-peso" className="px-4 py-3 text-center">
+                  <td data-testid="avaliacao-peso" className="px-4 py-3.5 text-center text-cinza">
                     {formatarNumero(av.peso)}
                   </td>
-                  <td data-testid="avaliacao-nota" className="px-4 py-3 text-center">
+                  <td data-testid="avaliacao-nota" className="px-4 py-3.5 text-center font-titulo font-bold text-azul">
                     {formatarNumero(av.nota)}
                   </td>
-                  <td className="px-4 py-3">
-                    <div className="flex justify-end gap-3">
-                      <Link href={`/avaliacoes/${av.id}/editar`} data-testid="botao-editar" className={linkAcao}>
-                        Editar
+                  <td className="px-5 py-3.5">
+                    <div className="flex justify-end gap-0.5">
+                      <Link
+                        href={`/avaliacoes/${av.id}/editar`}
+                        data-testid="botao-editar"
+                        aria-label="Editar"
+                        title="Editar"
+                        className={botaoIcone}
+                      >
+                        <IconeLapis />
                       </Link>
                       <BotaoExcluir
                         caminho={`/avaliacoes/${av.id}`}

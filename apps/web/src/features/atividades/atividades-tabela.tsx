@@ -1,18 +1,14 @@
-import { ROTULOS_PRIORIDADE, ROTULOS_TIPO, type AtividadeDetalhada, type Prioridade } from "@acadflow/shared";
+import { ROTULOS_PRIORIDADE, ROTULOS_TIPO, type AtividadeDetalhada } from "@acadflow/shared";
 import Link from "next/link";
 import { BotaoExcluir } from "@/components/ui/botao-excluir";
 import { EstadoVazio } from "@/components/ui/estado-vazio";
-import { linkAcao } from "@/components/ui/estilos";
+import { botaoIcone, etiqueta, linkAcao, tabela } from "@/components/ui/estilos";
+import { IconeLapis } from "@/components/ui/icones";
 import { apiServidor } from "@/lib/api-servidor";
+import { COR_PRIORIDADE, corDaDisciplina } from "@/lib/cores";
 import { formatarData } from "@/lib/formatar";
 import { DataConclusao } from "./data-conclusao";
 import { StatusSelect } from "./status-select";
-
-const COR_PRIORIDADE: Record<Prioridade, string> = {
-  alta: "bg-red-100 text-red-800",
-  media: "bg-amber-100 text-amber-800",
-  baixa: "bg-slate-100 text-slate-700",
-};
 
 /** Atividades em ordem de entrega, com status, prioridade e ações (RF04–RF07). */
 export async function AtividadesTabela() {
@@ -31,45 +27,61 @@ export async function AtividadesTabela() {
   }
 
   return (
-    <div className="overflow-x-auto rounded-lg border border-slate-200 bg-white">
-      <table className="w-full text-left text-sm">
-        <thead className="bg-slate-50 text-xs uppercase text-slate-500">
+    <div className={tabela.contorno}>
+      <table className={tabela.tabela}>
+        <thead className={tabela.cabecalho}>
           <tr>
-            <th className="px-4 py-3">Entrega</th>
-            <th className="px-4 py-3">Atividade</th>
+            <th className="px-5 py-3">Atividade</th>
             <th className="px-4 py-3">Disciplina</th>
+            <th className="px-4 py-3">Entrega</th>
             <th className="px-4 py-3">Prioridade</th>
             <th className="px-4 py-3">Status</th>
-            <th className="px-4 py-3 text-right">Ações</th>
+            <th className="px-5 py-3 text-right">Ações</th>
           </tr>
         </thead>
-        <tbody className="divide-y divide-slate-100">
+        <tbody className={tabela.corpo}>
           {atividades.map((a) => (
-            <tr key={a.id} data-testid="atividade-linha" data-titulo={a.titulo}>
-              <td className="whitespace-nowrap px-4 py-3 text-slate-700">{formatarData(a.dataEntrega)}</td>
-              <td className="px-4 py-3">
-                <p className="font-medium text-slate-900">{a.titulo}</p>
-                <p className="text-xs text-slate-500">{ROTULOS_TIPO[a.tipo]}</p>
+            <tr key={a.id} data-testid="atividade-linha" data-titulo={a.titulo} className={tabela.linha}>
+              <td className="px-5 py-3.5">
+                <p className="font-semibold text-azul">{a.titulo}</p>
+                <p className="text-xs text-cinza">{ROTULOS_TIPO[a.tipo]}</p>
               </td>
-              <td data-testid="atividade-disciplina" className="px-4 py-3 text-slate-600">
-                {a.disciplinaCodigo} – {a.disciplinaNome}
+              <td data-testid="atividade-disciplina" className="px-4 py-3.5 text-azul">
+                <span className="flex items-center gap-2">
+                  <span
+                    aria-hidden="true"
+                    className="size-2 shrink-0 rounded-full"
+                    style={{ backgroundColor: corDaDisciplina(a.disciplinaId) }}
+                  />
+                  <span>
+                    {a.disciplinaCodigo} – {a.disciplinaNome}
+                  </span>
+                </span>
               </td>
-              <td className="px-4 py-3">
+              <td className="whitespace-nowrap px-4 py-3.5 text-azul">{formatarData(a.dataEntrega)}</td>
+              <td className="px-4 py-3.5">
                 <span
                   data-testid="atividade-prioridade"
-                  className={`rounded-full px-2 py-0.5 text-xs font-medium ${COR_PRIORIDADE[a.prioridade]}`}
+                  className={`${etiqueta} ${COR_PRIORIDADE[a.prioridade].etiqueta}`}
                 >
+                  <span aria-hidden="true" className={`size-1.5 rounded-full ${COR_PRIORIDADE[a.prioridade].ponto}`} />
                   {ROTULOS_PRIORIDADE[a.prioridade]}
                 </span>
               </td>
-              <td className="px-4 py-3">
+              <td className="px-4 py-3.5">
                 <StatusSelect atividadeId={a.id} status={a.status} />
                 {a.dataConclusao && <DataConclusao instante={a.dataConclusao} />}
               </td>
-              <td className="px-4 py-3">
-                <div className="flex justify-end gap-3">
-                  <Link href={`/atividades/${a.id}/editar`} data-testid="botao-editar" className={linkAcao}>
-                    Editar
+              <td className="px-5 py-3.5">
+                <div className="flex justify-end gap-0.5">
+                  <Link
+                    href={`/atividades/${a.id}/editar`}
+                    data-testid="botao-editar"
+                    aria-label="Editar"
+                    title="Editar"
+                    className={botaoIcone}
+                  >
+                    <IconeLapis />
                   </Link>
                   <BotaoExcluir
                     caminho={`/atividades/${a.id}`}

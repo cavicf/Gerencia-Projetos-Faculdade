@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { AlertaErro } from "@/components/ui/alerta-erro";
 import { CampoForm } from "@/components/ui/campo-form";
-import { botaoPrimario, botaoSecundario, campo } from "@/components/ui/estilos";
+import { botaoPrimario, botaoSecundario, campo, cartao } from "@/components/ui/estilos";
 import { api, ApiError } from "@/lib/api";
 
 interface AvaliacaoFormProps {
@@ -55,12 +55,12 @@ export function AvaliacaoForm({ atividades, avaliacao }: AvaliacaoFormProps) {
   }
 
   return (
-    <form noValidate onSubmit={salvar} data-testid="avaliacao-form" className="max-w-xl space-y-4 rounded-lg border border-slate-200 bg-white p-6">
+    <form noValidate onSubmit={salvar} data-testid="avaliacao-form" className={`${cartao} max-w-xl space-y-5 p-6 sm:p-8`}>
       <AlertaErro mensagem={mensagem} />
 
       {avaliacao ? (
-        <p className="text-sm text-slate-600">
-          Atividade: <strong>{avaliacao.atividadeTitulo}</strong> ({avaliacao.disciplinaCodigo})
+        <p className="rounded-lg bg-fundo px-4 py-3 text-sm text-cinza">
+          Atividade: <strong className="text-azul">{avaliacao.atividadeTitulo}</strong> ({avaliacao.disciplinaCodigo})
         </p>
       ) : (
         <CampoForm id="atividadeId" rotulo="Atividade concluída" obrigatorio erro={erros.atividadeId}>
@@ -84,7 +84,7 @@ export function AvaliacaoForm({ atividades, avaliacao }: AvaliacaoFormProps) {
         </CampoForm>
       </div>
 
-      <div className="flex justify-end gap-2 pt-2">
+      <div className="-mx-6 flex justify-end gap-2 border-t border-borda px-6 pt-5 sm:-mx-8 sm:px-8">
         <Link href="/avaliacoes" className={botaoSecundario}>
           Cancelar
         </Link>

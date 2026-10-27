@@ -45,6 +45,7 @@ export function LoginForm() {
           onChange={(e) => setDados({ ...dados, email: e.target.value })}
           aria-invalid={!!erros.email}
           className={campo}
+          placeholder="seu.email@unifei.edu.br"
           autoFocus
         />
       </CampoForm>
@@ -60,7 +61,7 @@ export function LoginForm() {
           className={campo}
         />
       </CampoForm>
-      <button type="submit" data-testid="botao-entrar" disabled={entrando} className={`${botaoPrimario} w-full`}>
+      <button type="submit" data-testid="botao-entrar" disabled={entrando} className={`${botaoPrimario} mt-2 w-full`}>
         {entrando ? "Entrando…" : "Entrar"}
       </button>
     </form>

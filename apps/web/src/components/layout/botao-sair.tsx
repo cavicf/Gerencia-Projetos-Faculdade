@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { IconeSair } from "@/components/ui/icones";
 import { api } from "@/lib/api";
 
 /** RF15 – encerramento da sessão pelo próprio usuário. */
@@ -25,8 +26,9 @@ export function BotaoSair() {
       data-testid="botao-sair"
       onClick={sair}
       disabled={saindo}
-      className="font-medium text-slate-600 hover:text-red-700"
+      className="inline-flex items-center gap-2 rounded-lg px-2 py-1.5 text-sm font-semibold text-cinza transition-colors hover:bg-alerta-claro hover:text-alerta disabled:opacity-60"
     >
+      <IconeSair />
       Sair
     </button>
   );

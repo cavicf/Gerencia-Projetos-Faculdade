@@ -2,7 +2,7 @@ export function EstadoVazio({ children }: { children: React.ReactNode }) {
   return (
     <div
       data-testid="estado-vazio"
-      className="rounded-lg border border-dashed border-slate-300 bg-white p-8 text-center text-sm text-slate-600"
+      className="rounded-2xl border-2 border-dashed border-borda bg-white/60 p-10 text-center text-sm text-cinza"
     >
       {children}
     </div>
@@ -10,5 +10,5 @@ export function EstadoVazio({ children }: { children: React.ReactNode }) {
 }
 
 export function Carregando() {
-  return <p className="text-sm text-slate-500">Carregando…</p>;
+  return <p className="text-sm text-cinza">Carregando…</p>;
 }
